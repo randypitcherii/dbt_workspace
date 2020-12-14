@@ -1,0 +1,10 @@
+version: 2
+
+macros:
+  - name: create_snapshot_manually
+    description: This macro manually creates a snapshot table if one does not exist and inserts a full table snapshot into the new snapshot table (whew!). This is a **bad idea**, but it's a good demo of how to use run-operations with macros.
+    arguments:
+      - name: relation_to_snapshot
+        description: String containing the fully-qualified name of the view or table to snapshot. For example, `MY_DB.MY_SCHEMA.TABLE_TO_SNAPSHOT`.
+  - name: standardize_timestamp
+    description: 'This macro converts all timestamps into Snowflake `TIMESTAMP_NTZ` column types and converts them to `America/Chicago` time.'

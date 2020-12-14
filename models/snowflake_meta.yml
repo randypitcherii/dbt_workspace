@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: snowflake_meta
+    database: snowflake
+    schema: account_usage
+    loader: snowflake # informational only (free text)
+    
+    tags:
+      - snowflake_meta
+      
+    tables:
+      - name: query_history
+      - name: pipes
+      - name: pipe_usage_history
+      - name: warehouse_load_history
+      - name: warehouse_metering_history
+      - name: metering_history
+      - name: users
+      - name: roles
+      - name: grants_to_users
+      - name: grants_to_roles
