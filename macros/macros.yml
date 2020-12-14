@@ -6,5 +6,5 @@ macros:
     arguments:
       - name: relation_to_snapshot
         description: String containing the fully-qualified name of the view or table to snapshot. For example, `MY_DB.MY_SCHEMA.TABLE_TO_SNAPSHOT`.
-  - name: standardize_timestamps
+  - name: standardize_timestamp
     description: 'This macro converts all timestamps into Snowflake `TIMESTAMP_NTZ` column types and converts them to `America/Chicago` time.'
