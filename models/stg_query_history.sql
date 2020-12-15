@@ -5,9 +5,9 @@ WITH HISTORY AS (
     *
 
   FROM 
-  {% if target.name === 'prod' %}
+  {% if target.name == 'prod' %}
     {{ source('snowflake_meta', 'query_history') }}
-  {% elif target.name === 'qa' %}
+  {% elif target.name == 'qa' %}
     {{ source('snowflake_meta_qa', 'query_history') }}
   {% else %}
     {{ source('snowflake_meta_dev', 'query_history') }}
