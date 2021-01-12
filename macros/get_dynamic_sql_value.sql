@@ -8,4 +8,5 @@
   {% else %}
     {{ return('NULL')}}
   {% endif %}
+  
 {% endmacro %}
