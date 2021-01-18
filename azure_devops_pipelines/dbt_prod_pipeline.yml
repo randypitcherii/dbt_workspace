@@ -1,0 +1,33 @@
+# Production pipeline
+pool: 'randy_ec2_cd_agent_pool'
+
+# configure triggers
+# this pipeline runs when a change is made to master
+trigger: 
+  - master
+
+stages:
+  - stage: build_and_deploy_models
+    displayName: Build and deploy models
+    jobs:
+      - job: deploy_models
+        displayName: Deploy models with DBT
+        steps:
+          - script: |
+              echo "source ~/dbt_run_venv/bin/activate"
+              source ~/dbt_run_venv/bin/activate
+
+              echo "cd dbt"
+              cd dbt
+
+              echo "dbt deps --profiles-dir ../azure_pipelines/dbt_pipeline_profiles"
+              dbt deps --profiles-dir ../azure_pipelines/dbt_pipeline_profiles
+              
+              echo "dbt run --profiles-dir ../azure_pipelines/dbt_pipeline_profiles && dbt run-operation drop_old_relations --args '{cutoff_in_hours: 1}' --profiles-dir ../azure_pipelines/dbt_pipeline_profiles"
+              dbt run --profiles-dir ../azure_pipelines/dbt_pipeline_profiles && \
+                dbt run-operation drop_old_relations --args '{cutoff_in_hours: 1}' --profiles-dir ../azure_pipelines/dbt_pipeline_profiles
+            displayName: 'Trigger dbt Cloud production run'
+            env:
+              DBT_CLOUD_API_ENDPOINT: $(RANDY_PITCHER_WORKSPACE_DBT_PROD_USERNAME) # Set these values as secrets in the Azure pipelines web UI
+              DBT_CLOUD_API_KEY:      $(RANDY_PITCHER_WORKSPACE_DBT_PROD_PASSWORD) # Set these values as secrets in the Azure pipelines web UI
+            
