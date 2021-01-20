@@ -2,13 +2,13 @@
 
 select
     1 as id,
-    'red' as color
+    'purple' as color
 
 union all
 
 select
     2 as id,
-    'purple' as color
+    'red' as color
 
 union all
 
