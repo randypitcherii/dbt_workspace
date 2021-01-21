@@ -1,13 +1,20 @@
 with 
 
-deletes as (
+deletes_raw as (
     select 
         *,
         last_value(dbt_valid_to) over (partition by id order by dbt_valid_to asc) is not null as is_deleted
     
     from {{ ref('hard_deletes__snapshot')}}
+),
 
-    qualify is_deleted
+deletes as (
+    select 
+        *
+    
+    from deletes_raw
+
+    where is_deleted
 ),
 
 current_values as (
