@@ -3,7 +3,9 @@ with
 deletes_raw as (
     select 
         *,
-        last_value(dbt_valid_to) over (partition by id order by dbt_valid_to asc) is not null as is_deleted
+        first_value(dbt_valid_to) over (
+            partition by id order by dbt_valid_to asc rows between unbounded preceding and unbounded following
+        ) is not null as is_deleted
     
     from {{ ref('hard_deletes__snapshot')}}
 ),
