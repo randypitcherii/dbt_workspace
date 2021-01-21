@@ -4,12 +4,17 @@ select
     1 as id,
     'blue' as color
 
+union all
+
+select
+    2 as id,
+    'yellow' as color
 
 union all
 
 select
     3 as id,
-    'purple' as color
+    'red' as color
 
 union all
 
