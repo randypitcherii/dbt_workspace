@@ -25,6 +25,9 @@ clean-targets:         # directories to be removed by `dbt clean`
     - "dbt_modules"
 
 
+vars:
+  my_cool_var: '2016-06-01'
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
