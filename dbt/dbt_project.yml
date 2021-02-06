@@ -28,6 +28,18 @@ vars:
   my_cool_var: '2016-06-01'
 
 on-run-start: 'CALL {{stored_proc__pi()}}();'
+
 models:
   dbt_workspace:
     +materialized: view
+    demos:
+      custom_schema:
+        +materialized: table
+        +schema: demo_schema
+        # +database: sa_randy_1
+
+
+
+
+
+
