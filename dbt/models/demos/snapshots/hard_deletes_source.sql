@@ -22,14 +22,14 @@ select
     42 as the_answer,
     current_timestamp() as insert_time
 
-/* union all
+union all
 
 select
     4 as id,
     'green' as color,
     42 as the_answer,
     current_timestamp() as insert_time
- */
+
 union all
 
 select
