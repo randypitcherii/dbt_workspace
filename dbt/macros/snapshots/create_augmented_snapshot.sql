@@ -1,10 +1,10 @@
 {% macro create_augmented_snapshot(snapshot_table, table_key) %}
 
-    {% set distant_past       ='TIMESTAMP("1900-01-01 00:00:00+00")'%}
-    {% set distant_future     ='TIMESTAMP("9999-12-31 23:59:59+00")'%}
+    {% set distant_past       ="TIMESTAMP('1900-01-01 00:00:00+00')"%}
+    {% set distant_future     ="TIMESTAMP('9999-12-31 23:59:59+00')"%}
     {% set dbt_valid_from_min =
         'min(dbt_valid_from) over (
-            partition by ' ~ table_key ~ ' rows between unbounded preceding and unbounded following
+            partition by ' ~ table_key ~ ' order by dbt_valid_from rows between unbounded preceding and unbounded following
         )'
     %}
 
