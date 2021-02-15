@@ -27,7 +27,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 vars:
   my_cool_var: '2016-06-01'
 
-on-run-start: 'CALL {{stored_proc__pi()}}();'
+# on-run-start: 'CALL {{stored_proc__pi()}}();'
 
 models:
   dbt_workspace:
