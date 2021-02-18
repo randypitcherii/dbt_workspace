@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: model_with_schema_tests
+    loader: snowflake # informational only (free text)
+    
+    columns:
+      - name: id
+        tags: 
+            - skippable_schema_test
+        tests:
+            - unique
+            - not_null
+      

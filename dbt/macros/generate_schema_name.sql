@@ -8,6 +8,8 @@
         {{ default_schema }} 
     {%- elif 'default' == target.name -%}
         {{ default_schema }}_{{ custom_schema_name | trim }}
+    {%- elif 'dev' == target.name -%}
+        {{ default_schema }}_{{ custom_schema_name | trim }}
     {%- else -%}
         {{ custom_schema_name | trim }}
     {%- endif -%}
