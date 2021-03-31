@@ -21,4 +21,4 @@ jobs:
         pip install requests
     - name: Send get to google.com
       run: |
-        python -m ./.github/ping_google.py
+        python ./.github/ping_google.py
