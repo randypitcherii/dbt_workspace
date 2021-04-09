@@ -1,0 +1,24 @@
+name: dbt Cloud - PR Testing
+
+on: 
+  push:
+    branches: [2021-04-09--github_actions_dbt_cloud_pr_ci]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    - name: Send get to google.com
+      run: |
+        python ./.github/dbt_cloud_pr_testing.py
