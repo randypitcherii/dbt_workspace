@@ -28,4 +28,5 @@ WITH HISTORY AS (
   {% endif %}
 )
 
+
 SELECT * FROM HISTORY
