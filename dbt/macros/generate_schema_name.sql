@@ -2,7 +2,7 @@
     {%- set default_schema = target.schema -%}
     
     {% set log_msg='getting custom schema:\ntarget_name:' ~ target.name ~ '\ncustom_schema_name:' ~ custom_schema_name %}
-    {% do log(log_msg, True) %}
+    {% do log(log_msg, False) %}
 
     {%- if custom_schema_name is none -%}
         {{ default_schema }} 
