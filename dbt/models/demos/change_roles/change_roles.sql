@@ -1,6 +1,6 @@
 {{ 
     config(
-        pre_hook='use role transformer', 
+        pre_hook='use role ' ~ target.role , 
         post_hook='use role ' ~ target.role 
     ) 
 }}
