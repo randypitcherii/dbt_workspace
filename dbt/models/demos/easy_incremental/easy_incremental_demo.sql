@@ -1,5 +1,3 @@
-{{ config(tags=["snowflake_meta", "daily"], materialized='easy_incremental', watermark='watermark', transient=true) }}
-
 WITH HISTORY AS (
   SELECT 
     {{ standardize_timestamp('START_TIME') }} AS START_TIME_CENTRAL_TIME,
