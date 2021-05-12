@@ -1,3 +1,4 @@
+
 {% materialization easy_incremental, default -%}
 
   {% set unique_key = config.get('unique_key') %}
@@ -27,9 +28,13 @@
   {% else %}
       {% set tmp_relation = make_temp_relation(target_relation) %}
 
-      {# -- this > logic does not allow for legitimate new records that have a watermark value equal to the current watermark max #}
       {% set easy_incremental_sql %}
-        {{sql}} where {{watermark}} > (select max({{watermark}}) from {{existing_relation.identifier}})
+        {{sql}} 
+
+        {% if watermark is not none %}
+            -- this filter will only be applied on an incremental run
+            WHERE {{ watermark }} > (SELECT MAX(THIS.{{ watermark }}) FROM {{ this }} THIS)
+        {% endif %}
       {% endset %}
 
       {% do run_query(create_table_as(True, tmp_relation, easy_incremental_sql)) %}
