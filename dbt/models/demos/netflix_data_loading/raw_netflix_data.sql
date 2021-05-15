@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='easy_incremental', watermark='date_added') }}
 
 {% set target_stage='randy_pitcher_workspace_raw.netflix_loading.netflix_blob_stage'%}
 
