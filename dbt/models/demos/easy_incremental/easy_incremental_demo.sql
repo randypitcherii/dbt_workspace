@@ -1,3 +1,5 @@
+{{ config(materialized='easy_incremental', watermark='watermark') }}
+
 WITH HISTORY AS (
   SELECT 
     {{ standardize_timestamp('START_TIME') }} AS START_TIME_CENTRAL_TIME,
