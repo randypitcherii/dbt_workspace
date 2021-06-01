@@ -15,11 +15,11 @@ project_id      = os.environ['DBT_PROJECT_ID'] # no default here, just throw an 
 job_id          = os.environ['DBT_PR_JOB_ID'] # no default here, just throw an error here if id not provided
 
 print(f"""
+Configuration:
 api_base: {api_base}
 job_cause: {job_cause}
 git_branch: {git_branch}
 schema_override: {schema_override}
-api_key: {api_key}
 account_id: {account_id}
 project_id: {project_id}
 job_id: {job_id}
