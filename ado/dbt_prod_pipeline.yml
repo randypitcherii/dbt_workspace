@@ -1,30 +1,25 @@
-# configure triggers
-# this pipeline runs when a change is made to master
-trigger: 
-  - master
+variables:
+  DBT_URL: https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
+  DBT_JOB_CAUSE: 'Azure DevOps PR Job' # provide a descriptive job cause here for easy debugging down the road
+  DBT_ACCOUNT_ID: 7551
+  DBT_PROJECT_ID: 28299
+  DBT_PR_JOB_ID: 24598
+  DBT_JOB_SCHEMA_OVERRIDE: PR_ADO_BUILD_$(Build.QueuedById)
+  DBT_JOB_BRANCH: $(Build.SourceBranchName)
 
-stages:
-  - stage: build_and_deploy_models
-    displayName: Build and deploy models
-    jobs:
-      - job: deploy_models
-        displayName: Deploy models with DBT
-        steps:
-          - script: |
-              echo "source ~/dbt_run_venv/bin/activate"
-              source ~/dbt_run_venv/bin/activate
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
+    displayName: 'Use Python 3.7'
 
-              echo "cd dbt"
-              cd dbt
+  - script: |
+      pip install requests
+    displayName: 'Install python dependencies'
 
-              echo "dbt deps --profiles-dir ../azure_pipelines/dbt_pipeline_profiles"
-              dbt deps --profiles-dir ../azure_pipelines/dbt_pipeline_profiles
-              
-              echo "dbt run --profiles-dir ../azure_pipelines/dbt_pipeline_profiles && dbt run-operation drop_old_relations --args '{cutoff_in_hours: 1}' --profiles-dir ../azure_pipelines/dbt_pipeline_profiles"
-              dbt run --profiles-dir ../azure_pipelines/dbt_pipeline_profiles && \
-                dbt run-operation drop_old_relations --args '{cutoff_in_hours: 1}' --profiles-dir ../azure_pipelines/dbt_pipeline_profiles
-            displayName: 'Trigger dbt Cloud production run'
-            env:
-              DBT_CLOUD_API_ENDPOINT: $(RANDY_PITCHER_WORKSPACE_DBT_PROD_USERNAME) # Set these values as secrets in the Azure pipelines web UI
-              DBT_CLOUD_API_KEY:      $(RANDY_PITCHER_WORKSPACE_DBT_PROD_PASSWORD) # Set these values as secrets in the Azure pipelines web UI
+  - script: |
+      python ./python/run_and_monitor_dbt_cloud_job.py
+    displayName: 'Run dbt job '
+    env:
+      DBT_API_KEY: $(DBT_API_KEY) # Set these values as secrets in the Azure pipelines web UI
             
