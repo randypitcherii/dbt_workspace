@@ -1,0 +1,100 @@
+import requests
+import os
+import time
+
+#------------------------------------------------------------------------------
+# get environment variables
+#------------------------------------------------------------------------------
+api_base        = os.getenv('DBT_CLOUD_URL', 'https://cloud.getdbt.com') # default to multitenant url
+job_cause       = os.getenv('DBT_CLOUD_JOB_CAUSE', 'API-triggered job') # default to generic message
+git_branch      = os.getenv('DBT_CLOUD_JOB_BRANCH', None) # default to None
+schema_override = os.getenv('DBT_CLOUD_JOB_SCHEMA_OVERRIDE', None) # default to None
+api_key         = os.environ['DBT_CLOUD_API_KEY']  # no default here, just throw an error here if key not provided
+account_id      = os.environ['DBT_CLOUD_ACCOUNT_ID'] # no default here, just throw an error here if id not provided
+project_id      = os.environ['DBT_CLOUD_PROJECT_ID'] # no default here, just throw an error here if id not provided
+job_id          = os.environ['DBT_CLOUD_PR_JOB_ID'] # no default here, just throw an error here if id not provided
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# use environment variables to set configuration
+#------------------------------------------------------------------------------
+req_auth_header = {'Authorization': f'Token {api_key}'}
+req_job_url = f'{api_base}/api/v2/accounts/{account_id}/jobs/{job_id}/run/'
+run_status_map = { # dbt run statuses are encoded as integers. This map provides a human-readable status
+  1:  'Queued',
+  2:  'Starting',
+  3:  'Running',
+  10: 'Success',
+  20: 'Error',
+  30: 'Cancelled',
+}
+#------------------------------------------------------------------------------
+
+def run_job(url, headers, cause, branch=None, schema=None ) -> int:
+  """
+  Runs a dbt job
+  """
+  # build payload
+  req_payload = {'cause': cause}
+  if branch is not None:
+    req_payload['git_branch'] = branch
+  if schema_override is not None:
+    req_payload['schema_override'] = schema_override
+
+  # trigger job
+  run_job_resp = requests.post(url, headers=headers, data=req_payload).json()
+
+  # return run id
+  return run_job_resp['data']['id']
+
+
+def get_run_status(url, headers) -> str:
+  """
+  gets the status of a running dbt job
+  """
+  # get status
+  req_status_resp = requests.get(url, headers=headers).json()
+
+  # return status
+  run_status_code = req_status_resp['data']['status']
+  run_status = run_status_map[run_status_code]
+  return run_status
+
+
+def main():
+  print('Beginning request for job run...')
+
+  # run job
+  run_id: int = None
+  try:
+    run_id = run_job(req_job_url, req_auth_header, job_cause, git_branch, schema_override)
+  except Exception as e:
+    print(f'ERROR! - Could not trigger job:\n {e}')
+    raise
+
+  # build status check url and run status link
+  req_status_url = f'{api_base}/api/v2/accounts/{account_id}/runs/{run_id}/'
+  run_status_link = f'{api_base}/#/accounts/{account_id}/projects/{project_id}/runs/{run_id}/'
+
+  # update user with status link
+  print(f'Job running! See job status at {run_status_link}')
+
+  # check status indefinitely with an initial wait period
+  time.sleep(30)
+  while True:
+    status = get_run_status(req_status_url, req_auth_header)
+    print(f'Run status -> {status}')
+
+    if status in ['Error', 'Cancelled']:
+      raise Exception(f'Run failed or canceled. See why at {run_status_link}')
+
+    if status == 'Success':
+      print(f'Job completed successfully! See details at {run_status_link}')
+      return
+    
+    time.sleep(10)
+
+
+if __name__ == "__main__":
+    main()

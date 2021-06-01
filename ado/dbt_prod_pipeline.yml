@@ -1,6 +1,3 @@
-# Production pipeline
-pool: 'randy_ec2_cd_agent_pool'
-
 # configure triggers
 # this pipeline runs when a change is made to master
 trigger: 
