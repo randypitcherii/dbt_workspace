@@ -1,7 +1,7 @@
 {% macro snowflake__create_augmented_snapshot(snapshot_table, table_key) %}
 
-    {% set distant_past       ="TIMESTAMP('1900-01-01 00:00:00+00')"%}
-    {% set distant_future     ="TIMESTAMP('9999-12-31 23:59:59+00')"%}
+    {% set distant_past       ="TO_TIMESTAMP('1900-01-01 00:00:00+00')"%}
+    {% set distant_future     ="TO_TIMESTAMP('9999-12-31 23:59:59+00')"%}
     {% set dbt_valid_from_min =
         'min(dbt_valid_from) over (
             partition by ' ~ table_key ~ ' order by dbt_valid_from rows between unbounded preceding and unbounded following
@@ -15,13 +15,13 @@
         select
             *,
 
-            if(
+            iff(
                 dbt_valid_from = {{ dbt_valid_from_min }},
                 {{ distant_past }},
                 dbt_valid_from
             ) as valid_from_with_distant_past,
 
-            if(
+            iff(
                 dbt_valid_to is null,
                 {{ distant_future }},
                 dbt_valid_to
@@ -55,7 +55,7 @@
         select 
             *,
 
-            if(
+            iff(
                 is_deleted or (dbt_valid_to is null),
                 true,
                 false
