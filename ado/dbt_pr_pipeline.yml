@@ -4,13 +4,13 @@ pr: [ master ] # runs on PRs against master
 trigger: none  # turn off generic CI that builds on every commit by default 
 
 variables:
-  DBT_URL: https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
-  DBT_JOB_CAUSE: 'Azure DevOps PR Job' # provide a descriptive job cause here for easy debugging down the road
-  DBT_ACCOUNT_ID: 7551
-  DBT_PROJECT_ID: 28299
-  DBT_PR_JOB_ID: 24598
+  DBT_URL:                 https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
+  DBT_JOB_CAUSE:           'Azure DevOps PR Job' # provide a descriptive job cause here for easy debugging down the road
+  DBT_ACCOUNT_ID:          7551
+  DBT_PROJECT_ID:          28299
+  DBT_PR_JOB_ID:           24598
   DBT_JOB_SCHEMA_OVERRIDE: PR_ADO_BUILD_$(Build.QueuedById)
-  DBT_JOB_BRANCH: $(System.PullRequest.SourceBranch)
+  DBT_JOB_BRANCH:          $(System.PullRequest.SourceBranch)
 
 steps:
   - task: UsePythonVersion@0
