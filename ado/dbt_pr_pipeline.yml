@@ -1,3 +1,5 @@
+name: dbt - PR validation
+
 pr: [ master ] # runs on PRs against master
 
 variables:
