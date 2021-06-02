@@ -1,22 +1,24 @@
 name: dbt Cloud - PR Testing
 
 on: 
-  push:
+  pull_request:
     branches: 
       - master
 
 jobs:
-  run_dbt_on_merge_to_master:
-    name: dbt Production Run on Push to Master
+  dbt-validate_pr:
+    name: dbt PR Validation
     runs-on: ubuntu-latest
 
     env:
       DBT_API_KEY:             ${{ secrets.DBT_API_KEY }}
       DBT_URL:                 https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
-      DBT_JOB_CAUSE:           'Github Actions - Push to Master' # provide a descriptive job cause here for easy debugging down the road
+      DBT_JOB_CAUSE:           'Github Actions PR Job' # provide a descriptive job cause here for easy debugging down the road
       DBT_ACCOUNT_ID:          7551
       DBT_PROJECT_ID:          28299
-      DBT_PR_JOB_ID:           23095
+      DBT_PR_JOB_ID:           24594
+      DBT_JOB_SCHEMA_OVERRIDE: PR_GITHUB_ACTIONS_${{github.event.pull_request.number}}
+      DBT_JOB_BRANCH:          ${{github.head_ref}}
 
     steps:
     - uses: actions/checkout@v2
