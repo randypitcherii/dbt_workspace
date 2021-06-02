@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: 
       - master
+      - release*
 
 jobs:
   dbt-validate_pr:
@@ -17,8 +18,8 @@ jobs:
       DBT_ACCOUNT_ID:          7551
       DBT_PROJECT_ID:          28299
       DBT_PR_JOB_ID:           24594
-      DBT_JOB_SCHEMA_OVERRIDE: PR_GITHUB_ACTIONS_${{GITHUB_EVENT_NAME}}
-      DBT_JOB_BRANCH:          ${{GITHUB_HEAD_REF}}
+      DBT_JOB_SCHEMA_OVERRIDE: PR_GITHUB_ACTIONS_${{github.event_name}}
+      DBT_JOB_BRANCH:          ${{github.head_ref}}
 
     steps:
     - uses: actions/checkout@v2
