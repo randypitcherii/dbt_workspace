@@ -18,7 +18,7 @@ jobs:
       DBT_ACCOUNT_ID:          7551
       DBT_PROJECT_ID:          28299
       DBT_PR_JOB_ID:           24594
-      DBT_JOB_SCHEMA_OVERRIDE: PR_GITHUB_ACTIONS_${{github.event_name}}
+      DBT_JOB_SCHEMA_OVERRIDE: PR_GITHUB_ACTIONS_${{github.event.pull_request.number}}
       DBT_JOB_BRANCH:          ${{github.head_ref}}
 
     steps:
