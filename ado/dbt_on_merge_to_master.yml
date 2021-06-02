@@ -1,3 +1,5 @@
+name: dbt - Merge to master
+
 trigger: [ master ] # runs on pushes to master
 
 variables:
