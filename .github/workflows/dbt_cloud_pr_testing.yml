@@ -21,6 +21,5 @@ jobs:
         pip install requests
     - name: Trigger dbt job
       run: |
-        pwd
-        ls ~
+        ls
         python ../python/dbt_cloud_pr_testing.py
