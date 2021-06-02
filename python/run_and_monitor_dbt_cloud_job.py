@@ -52,7 +52,7 @@ def run_job(url, headers, cause, branch=None, schema=None ) -> int:
   if branch is not None:
     req_payload['git_branch'] = branch
   if schema_override is not None:
-    req_payload['schema_override'] = schema_override
+    req_payload['schema_override'] = schema_override.replace('-', '_')
 
   # trigger job
   run_job_resp = requests.post(url, headers=headers, data=req_payload).json()
