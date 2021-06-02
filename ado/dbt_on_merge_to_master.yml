@@ -8,7 +8,7 @@ variables:
   DBT_PROJECT_ID: 28299
   DBT_PR_JOB_ID: 23095
   DBT_JOB_SCHEMA_OVERRIDE: PR_ADO_BUILD_$(Build.QueuedById)
-  DBT_JOB_BRANCH: $(System.PullRequest.SourceBranch)
+  DBT_JOB_BRANCH: master
 
 steps:
   - task: UsePythonVersion@0
