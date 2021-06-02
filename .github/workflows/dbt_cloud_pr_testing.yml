@@ -1,12 +1,13 @@
 name: dbt Cloud - PR Testing
 
 on: 
-  push:
-    branches: [2021-04-09--github_actions_dbt_cloud_pr_ci]
+  pull_request:
+    branches: 
+      - main
 
 jobs:
-  build:
-
+  dbt-validate_pr:
+    name: dbt PR Validation
     runs-on: ubuntu-latest
 
     steps:
@@ -20,5 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
     - name: Trigger dbt job
+      env:
+        DBT_API_KEY: ${{ secrets.DBT_API_KEY }}
       run: |
         python ./python/run_and_monitor_dbt_cloud_job.py
