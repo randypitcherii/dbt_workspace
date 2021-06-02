@@ -55,6 +55,7 @@ def run_job(url, headers, cause, branch=None, schema=None ) -> int:
     req_payload['schema_override'] = schema_override.replace('-', '_')
 
   # trigger job
+  print(f'Triggering job:\n\turl: {url}\n\tpayload: {req_payload}')
   run_job_resp = requests.post(url, headers=headers, data=req_payload).json()
 
   # return run id
