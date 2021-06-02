@@ -23,7 +23,7 @@ steps:
     displayName: 'Install python dependencies'
 
   - script: |
-      python ./python/run_and_monitor_dbt_cloud_job.py
+      python -u ./python/run_and_monitor_dbt_cloud_job.py
     displayName: 'Run dbt job '
     env:
       DBT_API_KEY: $(DBT_API_KEY) # Set these values as secrets in the Azure pipelines web UI
