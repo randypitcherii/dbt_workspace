@@ -38,7 +38,7 @@ models:
         +watermark: watermark
       custom_schema:
         +materialized: table
-        +schema: demo_schema
+        +schema: custom_schema
 
 
 
