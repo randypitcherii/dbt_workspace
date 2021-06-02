@@ -30,4 +30,4 @@ jobs:
         pip install requests
     - name: Trigger dbt job
       run: |
-        python ./python/run_and_monitor_dbt_cloud_job.py
+        python -u ./python/run_and_monitor_dbt_cloud_job.py
