@@ -49,7 +49,7 @@ def run_job(url, headers, cause, branch=None, schema=None ) -> int:
   """
   # build payload
   req_payload = {'cause': cause}
-  if branch is not None:
+  if branch is not None and not branch.startswith('$('): # starts with '$(' indicates a valid branch name was not provided
     req_payload['git_branch'] = branch.replace('refs/heads/', '')
   if schema_override is not None:
     req_payload['schema_override'] = schema_override.replace('-', '_')
