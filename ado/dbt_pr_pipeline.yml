@@ -1,3 +1,5 @@
+pr: [ master ] # runs on PRs against master
+
 variables:
   DBT_URL: https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
   DBT_JOB_CAUSE: 'Azure DevOps PR Job' # provide a descriptive job cause here for easy debugging down the road
