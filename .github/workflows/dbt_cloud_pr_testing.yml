@@ -3,7 +3,7 @@ name: dbt Cloud - PR Testing
 on: 
   pull_request:
     branches: 
-      - main
+      - master
 
 jobs:
   dbt-validate_pr:
