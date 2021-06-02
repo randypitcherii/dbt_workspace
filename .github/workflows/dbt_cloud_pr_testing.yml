@@ -19,6 +19,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
-    - name: Send get to google.com
+    - name: Trigger dbt job
       run: |
-        python ./.github/dbt_cloud_pr_testing.py
+        python ./python/dbt_cloud_pr_testing.py
