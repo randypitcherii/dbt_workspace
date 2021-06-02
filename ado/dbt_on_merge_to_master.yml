@@ -1,5 +1,4 @@
-on:
-  push: [master]
+trigger: [ master ] # runs on pushes to master
 
 variables:
   DBT_URL: https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
