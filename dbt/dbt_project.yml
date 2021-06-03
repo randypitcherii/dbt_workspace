@@ -32,6 +32,8 @@ vars:
 models:
   dbt_workspace:
     +materialized: view
+    staging:
+      +pre-hook: "{{validate_model_name(this, 'stage')}}"
     demos:
       easy_incremental:
         +materialized: easy_incremental
