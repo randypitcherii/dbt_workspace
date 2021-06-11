@@ -15,7 +15,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: master
+
     - name: Create Pull Request
+      id: cpr
       uses: peter-evans/create-pull-request@v3
       with:
         delete-branch: false
@@ -23,3 +25,8 @@ jobs:
         title: 'Syncing team branch on update to master'
         body: |
           Some description
+    
+    - name: Check outputs
+      run: |
+        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
