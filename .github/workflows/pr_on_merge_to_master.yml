@@ -1,4 +1,4 @@
-name: Sync team dev branches on merge to master.
+name: Sync team dev branches on merge to master
 
 on: 
   push:
