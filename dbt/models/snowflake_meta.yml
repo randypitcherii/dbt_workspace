@@ -11,6 +11,11 @@ sources:
       
     tables:
       - name: query_history
+        columns:
+          - name: QUERY_ID
+            description: the id of the query
+            tests:
+              - unique
       - name: pipes
       - name: pipe_usage_history
       - name: warehouse_load_history
