@@ -14,14 +14,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: team_a
+        ref: master
 
     - name: Create Pull Request
       id: cpr
       uses: peter-evans/create-pull-request@v3
       with:
         delete-branch: false
-        branch: master
+        branch: master_to_team_a_sync
+        base: team_a
         title: 'Syncing team branch on update to master'
         body: |
           Some description
