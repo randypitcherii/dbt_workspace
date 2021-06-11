@@ -1,5 +1,5 @@
 # dbt Workspace - Make yourself at home!
-The purpose of this project is to demonstrate common patterns and use cases for dbt.
+The purpose of this project is to demonstrate common patterns and use cases for dbt!
 
 ## Resources:
 - Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
