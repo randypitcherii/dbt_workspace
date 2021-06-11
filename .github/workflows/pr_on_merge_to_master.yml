@@ -13,11 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: master
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
         delete-branch: false
-        base: master
         branch: team_a
         title: 'Syncing team branch on update to master'
         body: |
