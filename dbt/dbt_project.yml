@@ -33,6 +33,9 @@ vars:
 models:
   dbt_workspace:
     +materialized: view
+    hello:
+      +materialized: table
+      +schema: hello
     staging:
       +pre-hook: "{{validate_model_name(this, 'stage')}}"
       +post-hook: "{{validate_column_names(this)}}"
