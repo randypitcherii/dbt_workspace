@@ -2,6 +2,8 @@ name: 'secret'
 version: '1.0.0'
 config-version: 2
 
+profile: default
+
 vars:
   my_cool_var: '2016-06-01'
   snowflake_meta_src_db: 'snowflake' # override this with -> dbt run --vars "'snowflake_meta_src_db': 'my_snowflake_meta_src_db'"
