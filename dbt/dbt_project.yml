@@ -37,7 +37,7 @@ snapshots:
   secret:
     snowflake_meta:
       +tags: ['snowflake_meta']
-      +schema: snowflake_meta
+      +target_schema: snowflake_meta
 
 
 
