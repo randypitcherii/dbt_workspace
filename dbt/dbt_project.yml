@@ -15,16 +15,19 @@ models:
     +materialized: view
     
     snowflake_meta:
-      +tags: ['snowflake_meta']
+      +tags:   snowflake_meta
       +schema: snowflake_meta
 
     demos:
-      easy_incremental:
-        +materialized: easy_incremental
-        +watermark: watermark
       custom_schema:
-        +materialized: table
-        +schema: custom_schema
+        +schema:       custom_schema  
+        +materialized: table  
+      netflix:
+        +tags:   netflix
+        +schema: netflix
+      easy_incremental:
+        +watermark:    watermark
+        +materialized: easy_incremental
       snapshots:
         +enabled: False
 
