@@ -25,6 +25,8 @@ models:
       custom_schema:
         +materialized: table
         +schema: custom_schema
+      snapshots:
+        +enabled: False
 
 
 sources:
@@ -39,5 +41,7 @@ snapshots:
       +tags: ['snowflake_meta']
       +target_schema: snowflake_meta
 
+    hard_deletes:
+      +enabled: False
 
 
