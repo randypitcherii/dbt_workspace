@@ -2,7 +2,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'dbt_workspace'
+name: 'secret'
 version: '1.0.0'
 config-version: 2
 
@@ -47,7 +47,8 @@ models:
         +materialized: table
         +schema: custom_schema
 
-
+snapshots:
+  secret
 
 
 
