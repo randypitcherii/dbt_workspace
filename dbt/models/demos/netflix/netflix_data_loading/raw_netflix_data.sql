@@ -1,7 +1,5 @@
 {{ config(materialized='easy_incremental', watermark='date_added') }}
 
-{% set target_stage='randy_pitcher_workspace_raw.netflix_loading.netflix_blob_stage'%}
-
 with 
 
 raw_data as (
@@ -13,7 +11,7 @@ raw_data as (
         current_timestamp::timestamp_ntz as ingestion_time
     
     from
-        @{{target_stage}}
+        @{{source('netflix', 'netflix_blob_stage')}}
 )
 
 
