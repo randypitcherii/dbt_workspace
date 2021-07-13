@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name:     netflix
+    database: randy_pitcher_workspace_raw
+    schema:   netflix_loading
+    loader:   snowflake_external_stage # informational only (free text)
+
+    tags:
+      - netflix
+    
+    tables:
+      - name: netflix_blob_stage

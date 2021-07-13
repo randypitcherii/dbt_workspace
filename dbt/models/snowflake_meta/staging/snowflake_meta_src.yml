@@ -11,16 +11,10 @@ sources:
       
     tables:
       - name: query_history
-      - name: pipes
-      - name: pipe_usage_history
       - name: warehouse_load_history
       - name: warehouse_metering_history
       - name: metering_history
       - name: users
-      - name: roles
-      - name: grants_to_users
-      - name: grants_to_roles
-
 
   - name: snowflake_meta_qa
     database: snowflake
