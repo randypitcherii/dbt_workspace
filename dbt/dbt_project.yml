@@ -23,12 +23,13 @@ models:
         +schema:       custom_schema  
         +materialized: table  
       netflix:
-        +tags:   netflix
-        +schema: netflix
+        +tags:    netflix
+        +schema:  netflix
+        +enabled: false
       easy_incremental:
         +watermark:    watermark
         +materialized: easy_incremental
-      snapshots:
+      hard_deletes:
         +enabled: False
 
 sources:
