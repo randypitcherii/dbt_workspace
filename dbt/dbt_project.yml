@@ -43,7 +43,7 @@ snapshots:
   secret:
     snowflake_meta:
       +tags: ['snowflake_meta']
-      +target_schema: snowflake_meta
+      +target_schema: "{{ 'snowflake_meta' if 'prd' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
 
     hard_deletes:
       +enabled: False
