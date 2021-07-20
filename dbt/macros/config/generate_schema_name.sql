@@ -4,13 +4,10 @@
     {% set log_msg='getting custom schema:\ntarget_name:' ~ target.name ~ '\ncustom_schema_name:' ~ custom_schema_name %}
     {% do log(log_msg, False) %}
 
-    {%- if custom_schema_name is none -%}
-        {{ default_schema }} 
-    {%- elif 'default' == target.name -%}
-        {{ default_schema }}_{{ custom_schema_name | trim }}
-    {%- elif 'dev' == target.name -%}
-        {{ default_schema }}_{{ custom_schema_name | trim }}
+    {%- if custom_schema_name -%}
+        {{ custom_schema_name if 'prod' in target.name.lower() else target.schema ~ '__' ~ custom_schema_name }}
     {%- else -%}
-        {{ custom_schema_name | trim }}
+        {{ default_schema }} 
     {%- endif -%}
+
 {%- endmacro %}
