@@ -141,10 +141,11 @@ GRANT ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_n
 GRANT ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_name }}_ADMIN;
 
 // grant OA roles to the developer
-GRANT ROLE {{ project_name }}_DEV_WRITE             TO ROLE {{ project_name }}_DEVELOPER;
-GRANT ROLE {{ project_name }}_PROD_READ             TO ROLE {{ project_name }}_DEVELOPER;
-GRANT ROLE {{ project_name }}_RAW_DATA_READ         TO ROLE {{ project_name }}_DEVELOPER;
-GRANT ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_DEV_WRITE                     TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_PROD_READ                     TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_RAW_DATA_READ                 TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES         TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_name }}_DEVELOPER;
 
 // grant OA roles to the test service account role
 GRANT ROLE {{ project_name }}_DEV_WRITE     TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
@@ -197,26 +198,20 @@ USE ROLE SECURITYADMIN;
 -- GRANT SELECT ON ALL TABLES IN DATABASE FIVETRAN    TO ROLE {{ project_name }}_RAW_DATA_READ;
 -- GRANT SELECT ON FUTURE TABLES IN DATABASE FIVETRAN TO ROLE {{ project_name }}_RAW_DATA_READ;
 
+// Check out this example below for adding the snowflake account usage data to your dbt projects
+USE ROLE SECURITYADMIN;
+-- CREATE ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+-- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE SYSADMIN; -- always do this
+-- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE {{ project_name }}_RAW_DATA_READ;
+
+-- USE ROLE ACCOUNTADMIN;
+-- GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+
 // Annnnd lastly, you should probably grant the dev permissions to some of your favorite people
 USE ROLE SECURITYADMIN;
 -- GRANT ROLE {{ project_name }}_ADMIN     TO USER LILY;
 -- GRANT ROLE {{ project_name }}_DEVELOPER TO USER PENELOPE;
 //=============================================================================
-
-/**
- *
- *
- *   ___       ________  ___      ___ _______                 ________  ________  ________   ________      ___    ___ 
- *  |\  \     |\   __  \|\  \    /  /|\  ___ \               |\   __  \|\   __  \|\   ___  \|\   ___ \    |\  \  /  /|
- *  \ \  \    \ \  \|\  \ \  \  /  / | \   __/|              \ \  \|\  \ \  \|\  \ \  \\ \  \ \  \_|\ \   \ \  \/  / /
- *   \ \  \    \ \  \\\  \ \  \/  / / \ \  \_|/__  ___        \ \   _  _\ \   __  \ \  \\ \  \ \  \ \\ \   \ \    / / 
- *    \ \  \____\ \  \\\  \ \    / /   \ \  \_|\ \|\  \        \ \  \\  \\ \  \ \  \ \  \\ \  \ \  \_\\ \   \/  /  /  
- *     \ \_______\ \_______\ \__/ /     \ \_______\ \  \        \ \__\\ _\\ \__\ \__\ \__\\ \__\ \_______\__/  / /    
- *      \|_______|\|_______|\|__|/       \|_______|\/  /|        \|__|\|__|\|__|\|__|\|__| \|__|\|_______|\___/ /     
- *                                               |\___/ /                                                \|___|/      
- *                                               \|___|/                                                              
- *
- **/
 {% endset %}
 
 {% do log('\n\n' ~ setup_script ~ '\n\n', True) %}
