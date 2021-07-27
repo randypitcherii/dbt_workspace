@@ -1,0 +1,1 @@
+select *, current_timestamp::date as updated_day from {{ref('my_second_model')}}
