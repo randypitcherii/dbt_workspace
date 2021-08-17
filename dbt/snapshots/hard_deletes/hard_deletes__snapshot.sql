@@ -4,7 +4,7 @@
     config(
       target_database=target.database,
       target_schema=target.schema,
-      unique_key='id',
+      unique_key='order_id',
       check_cols=['color'],
       strategy='check',
       invalidate_hard_deletes=True,
