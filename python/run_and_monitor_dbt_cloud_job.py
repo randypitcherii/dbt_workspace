@@ -43,7 +43,7 @@ run_status_map = { # dbt run statuses are encoded as integers. This map provides
 }
 #------------------------------------------------------------------------------
 
-def run_job(url, headers, cause, branch=None, schema=None ) -> int:
+def run_job(url, headers, cause, branch=None, schema_override=None ) -> int:
   """
   Runs a dbt job
   """
