@@ -25,27 +25,28 @@ models:
       netflix:
         +tags:    netflix
         +schema:  netflix
-        +enabled: false
+        +enabled: False
       easy_incremental:
         +watermark:    watermark
         +materialized: easy_incremental
       hard_deletes:
-        +enabled: False
+        +enabled: True
 
 sources:
   secret:
     snowflake_meta:
       +tags: ['snowflake_meta']
     hard_deletes:
-      +enabled: False
+      +enabled: True
 
 snapshots:
   secret:
     snowflake_meta:
+      +enabled: False
       +tags: ['snowflake_meta']
       +target_schema: "{{ 'snowflake_meta' if 'prod' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
 
     hard_deletes:
-      +enabled: False
+      +enabled: True
 
 
