@@ -12,11 +12,16 @@ vars:
 
 models:
   secret:
+    +persist_docs:
+      relation: True
+      columns: True
     +materialized: view
     
     snowflake_meta:
-      +tags:   snowflake_meta
+      +tags:   ['snowflake_meta', 'solution_architects']
       +schema: snowflake_meta
+      staging:
+        +post-hook: "{{validate_model_name(this, ruleset='stage')}}"
 
     demos:
       custom_schema:
@@ -36,8 +41,6 @@ sources:
   secret:
     snowflake_meta:
       +tags: ['snowflake_meta']
-    hard_deletes:
-      +enabled: True
 
 snapshots:
   secret:
