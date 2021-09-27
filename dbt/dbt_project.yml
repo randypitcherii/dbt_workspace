@@ -18,18 +18,18 @@ models:
     +materialized: view
     
     snowflake_meta:
-      +tags:   ['snowflake_meta', 'solution_architects']
+      +tags:   ['snowflake_meta']
       +schema: snowflake_meta
       staging:
         +post-hook: "{{validate_model_name(this, ruleset='stage')}}"
 
     demos:
       custom_schema:
-        +schema:       custom_schema  
+        # +schema:       custom_schema  
         +materialized: table  
       netflix:
         +tags:    netflix
-        +schema:  netflix
+        # +schema:  netflix
         +enabled: False
       easy_incremental:
         +watermark:    watermark
@@ -45,7 +45,7 @@ sources:
 snapshots:
   secret:
     snowflake_meta:
-      +enabled: False
+      +enabled: True
       +tags: ['snowflake_meta']
       +target_schema: "{{ 'snowflake_meta' if 'prod' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
 
