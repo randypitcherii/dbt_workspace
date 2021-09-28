@@ -1,2 +1,3 @@
+{{config(materialized='table')}}
 
-select 'hello, world!' as col
+select 'hello, world!' as col 

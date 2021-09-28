@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: my_first_model
+    description: this is my first model 
+
+    columns:
+      - name: col
+        description: "STRING - column for the first model"
