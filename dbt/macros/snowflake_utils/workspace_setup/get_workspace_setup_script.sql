@@ -104,6 +104,7 @@ GRANT ROLE {{ project_name }}_PROD_WH_USAGE         TO ROLE SYSADMIN;
 USE ROLE SECURITYADMIN;
 
 // raw data access
+GRANT OWNERSHIP ON DATABASE {{ project_name }}_RAW                           TO ROLE {{ project_name }}_RAW_OWNER;
 GRANT USAGE ON DATABASE {{ project_name }}_RAW                               TO ROLE {{ project_name }}_RAW_READ;
 GRANT USAGE ON ALL SCHEMAS IN DATABASE {{ project_name }}_RAW                TO ROLE {{ project_name }}_RAW_READ;
 GRANT USAGE ON FUTURE SCHEMAS IN DATABASE {{ project_name }}_RAW             TO ROLE {{ project_name }}_RAW_READ;
@@ -113,7 +114,6 @@ GRANT SELECT ON ALL MATERIALIZED VIEWS IN DATABASE {{ project_name }}_RAW    TO 
 GRANT SELECT ON FUTURE TABLES IN DATABASE {{ project_name }}_RAW             TO ROLE {{ project_name }}_RAW_READ;
 GRANT SELECT ON FUTURE VIEWS IN DATABASE {{ project_name }}_RAW              TO ROLE {{ project_name }}_RAW_READ;
 GRANT SELECT ON FUTURE MATERIALIZED VIEWS IN DATABASE {{ project_name }}_RAW TO ROLE {{ project_name }}_RAW_READ;
-GRANT OWNERSHIP ON DATABASE {{ project_name }}_RAW                           TO ROLE {{ project_name }}_RAW_OWNER;
 
 // dev data access
 GRANT USAGE ON DATABASE {{ project_name }}_DEV                               TO ROLE {{ project_name }}_DEV_READ;
@@ -246,12 +246,12 @@ USE ROLE SECURITYADMIN;
 
 // Check out this example below for adding the snowflake account usage data to your dbt projects
 USE ROLE SECURITYADMIN;
-CREATE ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
-GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE SYSADMIN; -- always do this
-GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
+-- CREATE ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+-- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE SYSADMIN; -- always do this
+-- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
 
 USE ROLE ACCOUNTADMIN;
-GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+-- GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
 
 // Annnnd lastly, you should probably grant the dev permissions to some of your favorite people
 USE ROLE SECURITYADMIN;
