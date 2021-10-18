@@ -4,7 +4,13 @@
     
     Also, use good, unique passwords. Or else... 
 #}
-{% macro get_workspace_setup_script(project_name, test_svc_accnt_password, prod_svc_accnt_password) %}
+{% macro 
+  get_workspace_setup_script(
+    project_name, 
+    test_svc_accnt_password, 
+    prod_svc_accnt_password
+  ) 
+%}
 
 {% set setup_script %}
 
@@ -14,11 +20,15 @@
 USE ROLE SYSADMIN;
 
 // Databases
+CREATE DATABASE {{ project_name }}_RAW;
 CREATE DATABASE {{ project_name }}_DEV;
+CREATE DATABASE {{ project_name }}_TEST;
 CREATE DATABASE {{ project_name }}_PROD;
 
 // Clean public schemas
+DROP SCHEMA {{ project_name }}_RAW.PUBLIC;
 DROP SCHEMA {{ project_name }}_DEV.PUBLIC;
+DROP SCHEMA {{ project_name }}_TEST.PUBLIC;
 DROP SCHEMA {{ project_name }}_PROD.PUBLIC;
 //=============================================================================
 
@@ -37,14 +47,14 @@ CREATE WAREHOUSE {{ project_name }}_DEV_WH
 
 // test warehouse
 CREATE WAREHOUSE {{ project_name }}_TEST_WH
-    COMMENT='Warehouse for powering CI test activities for the {{ project_name }} project'
+    COMMENT='Warehouse for powering test activities for the {{ project_name }} project'
     WAREHOUSE_SIZE=XSMALL
     AUTO_SUSPEND=60
     INITIALLY_SUSPENDED=TRUE;
 
 // prod warehouse
 CREATE WAREHOUSE {{ project_name }}_PROD_WH
-    COMMENT='Warehouse for powering CI production activities for the {{ project_name }} project'
+    COMMENT='Warehouse for powering production activities for the {{ project_name }} project'
     WAREHOUSE_SIZE=XSMALL
     AUTO_SUSPEND=60
     INITIALLY_SUSPENDED=TRUE;
@@ -57,11 +67,15 @@ CREATE WAREHOUSE {{ project_name }}_PROD_WH
 USE ROLE SECURITYADMIN;
 
 // data access
+CREATE ROLE {{ project_name }}_RAW_READ;
+CREATE ROLE {{ project_name }}_RAW_OWNER;
 CREATE ROLE {{ project_name }}_DEV_READ;
 CREATE ROLE {{ project_name }}_DEV_WRITE;
+CREATE ROLE {{ project_name }}_TEST_READ;
+CREATE ROLE {{ project_name }}_TEST_WRITE;
 CREATE ROLE {{ project_name }}_PROD_READ;
 CREATE ROLE {{ project_name }}_PROD_WRITE;
-CREATE ROLE {{ project_name }}_RAW_DATA_READ; -- Grant full source read access to this role. Think Fivetran read role for example.
+CREATE ROLE {{ project_name }}_OTHER_RAW_DATA_READ; -- Grant full source read access to this role. Think Fivetran read role for example.
 
 // warehouse access
 CREATE ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES;
@@ -69,11 +83,15 @@ CREATE ROLE {{ project_name }}_TEST_WH_USAGE;
 CREATE ROLE {{ project_name }}_PROD_WH_USAGE;
 
 // grant all roles to sysadmin (always do this)
+GRANT ROLE {{ project_name }}_RAW_OWNER             TO ROLE SYSADMIN;
+GRANT ROLE {{ project_name }}_RAW_READ              TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_DEV_WRITE             TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_DEV_READ              TO ROLE SYSADMIN;
+GRANT ROLE {{ project_name }}_TEST_WRITE            TO ROLE SYSADMIN;
+GRANT ROLE {{ project_name }}_TEST_READ             TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_PROD_WRITE            TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_PROD_READ             TO ROLE SYSADMIN;
-GRANT ROLE {{ project_name }}_RAW_DATA_READ         TO ROLE SYSADMIN;
+GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ   TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_TEST_WH_USAGE         TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_PROD_WH_USAGE         TO ROLE SYSADMIN;
@@ -84,6 +102,18 @@ GRANT ROLE {{ project_name }}_PROD_WH_USAGE         TO ROLE SYSADMIN;
 // grant privileges to object access roles
 //=============================================================================
 USE ROLE SECURITYADMIN;
+
+// raw data access
+GRANT USAGE ON DATABASE {{ project_name }}_RAW                               TO ROLE {{ project_name }}_RAW_READ;
+GRANT USAGE ON ALL SCHEMAS IN DATABASE {{ project_name }}_RAW                TO ROLE {{ project_name }}_RAW_READ;
+GRANT USAGE ON FUTURE SCHEMAS IN DATABASE {{ project_name }}_RAW             TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON ALL TABLES IN DATABASE {{ project_name }}_RAW                TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON ALL VIEWS IN DATABASE {{ project_name }}_RAW                 TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON ALL MATERIALIZED VIEWS IN DATABASE {{ project_name }}_RAW    TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON FUTURE TABLES IN DATABASE {{ project_name }}_RAW             TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON FUTURE VIEWS IN DATABASE {{ project_name }}_RAW              TO ROLE {{ project_name }}_RAW_READ;
+GRANT SELECT ON FUTURE MATERIALIZED VIEWS IN DATABASE {{ project_name }}_RAW TO ROLE {{ project_name }}_RAW_READ;
+GRANT OWNERSHIP ON DATABASE {{ project_name }}_RAW                           TO ROLE {{ project_name }}_RAW_OWNER;
 
 // dev data access
 GRANT USAGE ON DATABASE {{ project_name }}_DEV                               TO ROLE {{ project_name }}_DEV_READ;
@@ -97,6 +127,19 @@ GRANT SELECT ON FUTURE VIEWS IN DATABASE {{ project_name }}_DEV              TO 
 GRANT SELECT ON FUTURE MATERIALIZED VIEWS IN DATABASE {{ project_name }}_DEV TO ROLE {{ project_name }}_DEV_READ;
 GRANT ROLE {{ project_name }}_DEV_READ                                       TO ROLE {{ project_name }}_DEV_WRITE;
 GRANT CREATE SCHEMA ON DATABASE {{ project_name }}_DEV                       TO ROLE {{ project_name }}_DEV_WRITE;
+
+// test data access
+GRANT USAGE ON DATABASE {{ project_name }}_TEST                               TO ROLE {{ project_name }}_TEST_READ;
+GRANT USAGE ON ALL SCHEMAS IN DATABASE {{ project_name }}_TEST                TO ROLE {{ project_name }}_TEST_READ;
+GRANT USAGE ON FUTURE SCHEMAS IN DATABASE {{ project_name }}_TEST             TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON ALL TABLES IN DATABASE {{ project_name }}_TEST                TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON ALL VIEWS IN DATABASE {{ project_name }}_TEST                 TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON ALL MATERIALIZED VIEWS IN DATABASE {{ project_name }}_TEST    TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON FUTURE TABLES IN DATABASE {{ project_name }}_TEST             TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON FUTURE VIEWS IN DATABASE {{ project_name }}_TEST              TO ROLE {{ project_name }}_TEST_READ;
+GRANT SELECT ON FUTURE MATERIALIZED VIEWS IN DATABASE {{ project_name }}_TEST TO ROLE {{ project_name }}_TEST_READ;
+GRANT ROLE {{ project_name }}_TEST_READ                                       TO ROLE {{ project_name }}_TEST_WRITE;
+GRANT CREATE SCHEMA ON DATABASE {{ project_name }}_TEST                       TO ROLE {{ project_name }}_TEST_WRITE;
 
 // prod data access
 GRANT USAGE ON DATABASE {{ project_name }}_PROD                               TO ROLE {{ project_name }}_PROD_READ;
@@ -136,26 +179,29 @@ GRANT ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE TO ROLE SYSADMIN;
 GRANT ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE TO ROLE SYSADMIN;
 
 // grant bf roles to admin
+GRANT ROLE {{ project_name }}_RAW_OWNER                     TO ROLE {{ project_name }}_ADMIN;
 GRANT ROLE {{ project_name }}_DEVELOPER                     TO ROLE {{ project_name }}_ADMIN;
 GRANT ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_name }}_ADMIN;
 GRANT ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_name }}_ADMIN;
 
 // grant OA roles to the developer
+GRANT ROLE {{ project_name }}_RAW_READ                      TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_DEV_WRITE                     TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_PROD_READ                     TO ROLE {{ project_name }}_DEVELOPER;
-GRANT ROLE {{ project_name }}_RAW_DATA_READ                 TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ           TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES         TO ROLE {{ project_name }}_DEVELOPER;
-GRANT ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_name }}_DEVELOPER;
 
 // grant OA roles to the test service account role
-GRANT ROLE {{ project_name }}_DEV_WRITE     TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
-GRANT ROLE {{ project_name }}_RAW_DATA_READ TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
-GRANT ROLE {{ project_name }}_TEST_WH_USAGE TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_TEST_WRITE          TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_RAW_READ            TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_TEST_WH_USAGE       TO ROLE {{ project_name }}_DBT_TEST_SERVICE_ACCOUNT_ROLE;
 
 // grant OA roles to the prod service account role
-GRANT ROLE {{ project_name }}_PROD_WRITE    TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
-GRANT ROLE {{ project_name }}_RAW_DATA_READ TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
-GRANT ROLE {{ project_name }}_PROD_WH_USAGE TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_PROD_WRITE          TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_RAW_READ            TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_PROD_WH_USAGE.      TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
 //=============================================================================
 
 
@@ -189,23 +235,23 @@ GRANT ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE TO USER {{ project_n
 //=============================================================================
 // Connect this good funk to your existing warehouse junk
 //=============================================================================
-// Importantly, make sure you grant the proper read access for your sources to the {{ project_name }}_RAW_DATA_READ role
+// Importantly, make sure you grant the proper read access for your sources to the {{ project_name }}_OTHER_RAW_DATA_READ role
 // Something like:
 USE ROLE SECURITYADMIN;
--- GRANT USAGE ON DATABASE FIVETRAN                   TO ROLE {{ project_name }}_RAW_DATA_READ;
--- GRANT USAGE ON ALL SCHEMAS IN DATABASE FIVETRAN    TO ROLE {{ project_name }}_RAW_DATA_READ;
--- GRANT USAGE ON FUTURE SCHEMAS IN DATABASE FIVETRAN TO ROLE {{ project_name }}_RAW_DATA_READ;
--- GRANT SELECT ON ALL TABLES IN DATABASE FIVETRAN    TO ROLE {{ project_name }}_RAW_DATA_READ;
--- GRANT SELECT ON FUTURE TABLES IN DATABASE FIVETRAN TO ROLE {{ project_name }}_RAW_DATA_READ;
+-- GRANT USAGE ON DATABASE FIVETRAN                   TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
+-- GRANT USAGE ON ALL SCHEMAS IN DATABASE FIVETRAN    TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
+-- GRANT USAGE ON FUTURE SCHEMAS IN DATABASE FIVETRAN TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
+-- GRANT SELECT ON ALL TABLES IN DATABASE FIVETRAN    TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
+-- GRANT SELECT ON FUTURE TABLES IN DATABASE FIVETRAN TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
 
 // Check out this example below for adding the snowflake account usage data to your dbt projects
 USE ROLE SECURITYADMIN;
--- CREATE ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
--- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE SYSADMIN; -- always do this
--- GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE {{ project_name }}_RAW_DATA_READ;
+CREATE ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE SYSADMIN; -- always do this
+GRANT ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE TO ROLE {{ project_name }}_OTHER_RAW_DATA_READ;
 
--- USE ROLE ACCOUNTADMIN;
--- GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
+USE ROLE ACCOUNTADMIN;
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE SNOWFLAKE_ACCOUNT_USAGE_READ_ROLE;
 
 // Annnnd lastly, you should probably grant the dev permissions to some of your favorite people
 USE ROLE SECURITYADMIN;
