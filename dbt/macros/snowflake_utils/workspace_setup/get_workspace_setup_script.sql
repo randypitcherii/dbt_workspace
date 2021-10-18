@@ -187,6 +187,7 @@ GRANT ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE TO ROLE {{ project_n
 // grant OA roles to the developer
 GRANT ROLE {{ project_name }}_RAW_READ                      TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_DEV_WRITE                     TO ROLE {{ project_name }}_DEVELOPER;
+GRANT ROLE {{ project_name }}_TEST_READ                     TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_PROD_READ                     TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ           TO ROLE {{ project_name }}_DEVELOPER;
 GRANT ROLE {{ project_name }}_DEV_WH_ALL_PRIVILEGES         TO ROLE {{ project_name }}_DEVELOPER;
@@ -201,7 +202,7 @@ GRANT ROLE {{ project_name }}_TEST_WH_USAGE       TO ROLE {{ project_name }}_DBT
 GRANT ROLE {{ project_name }}_PROD_WRITE          TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
 GRANT ROLE {{ project_name }}_RAW_READ            TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
 GRANT ROLE {{ project_name }}_OTHER_RAW_DATA_READ TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
-GRANT ROLE {{ project_name }}_PROD_WH_USAGE.      TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
+GRANT ROLE {{ project_name }}_PROD_WH_USAGE       TO ROLE {{ project_name }}_DBT_PROD_SERVICE_ACCOUNT_ROLE;
 //=============================================================================
 
 
