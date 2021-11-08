@@ -42,6 +42,17 @@ sources:
     snowflake_meta:
       +tags: ['snowflake_meta']
 
+seeds:
+  secret:
+    +enabled: False # disabled because these sources are static and take a few minutes to upload.
+    tpch:
+      +schema: tpch
+      +tags: ['tpch']
+    jaffle_shop:
+      +schema: jaffle
+      +tags: ['jaffle']
+
+
 snapshots:
   secret:
     snowflake_meta:
