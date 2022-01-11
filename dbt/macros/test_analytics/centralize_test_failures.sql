@@ -34,19 +34,19 @@
   
   );
   
-  -- in higher environments store the history; otherwise go from run to run in dev
-  {% if target.name == 'default' %}
+  -- only run centralization in higher environments
+  {% if target.name != 'default' %}
       create table if not exists {{ history_tbl }} as (
         select 
-          {{ dbt_utils.surrogate_key(["test_name", "model_name", "_timestamp"]) }} as sk_id, 
+          {{ dbt_utils.surrogate_key(["test_name", "test_failures_json", "_timestamp"]) }} as sk_id, 
           * 
         from {{ central_tbl }}
         where false
       );
-    
+
     insert into {{ history_tbl }} 
       select 
-       {{ dbt_utils.surrogate_key(["test_name", "model_name", "_timestamp"]) }} as sk_id, 
+       {{ dbt_utils.surrogate_key(["test_name", "test_failures_json", "_timestamp"]) }} as sk_id, 
        * 
       from {{ central_tbl }}
     ;
