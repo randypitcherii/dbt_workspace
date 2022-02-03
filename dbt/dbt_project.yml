@@ -29,8 +29,7 @@ models:
         +materialized: table  
       netflix:
         +tags:    netflix
-        # +schema:  netflix
-        +enabled: False
+        +enabled: True
       easy_incremental:
         +watermark:    watermark
         +materialized: easy_incremental
