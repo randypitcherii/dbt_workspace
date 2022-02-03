@@ -10,7 +10,7 @@
     {{ run_hooks(pre_hooks) }}
 
 
-    {% if (old_relation is not none and not old_relation.is_table) or should_full_refresh() %}
+    {% if old_relation is none or not old_relation.is_table or should_full_refresh() %}
         {{ log("Replacing existing relation " ~ old_relation) }}
         {%- call statement('main') -%}
             {{ create_table_as(false, target_relation, sql ~ '\nlimit 0') }}

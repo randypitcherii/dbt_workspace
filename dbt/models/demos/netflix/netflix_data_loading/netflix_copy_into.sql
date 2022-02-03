@@ -1,8 +1,10 @@
 {{ config(materialized='copy_into') }}
 
 select
-     $1::string as show_id ,
-     $2::string as show_idd ,
+    {{ get_stage_columns_from_loading_config(
+        stage_name=source('netflix', 'netflix_blob_stage'), 
+        config_table=ref('loading_config')
+    )}},
     current_timestamp::timestamp_ntz as ingestion_time
 
 from
