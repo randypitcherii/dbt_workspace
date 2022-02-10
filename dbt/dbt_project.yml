@@ -50,6 +50,10 @@ seeds:
     jaffle_shop:
       +schema: jaffle
       +tags: ['jaffle']
+    zodiac:
+      +enabled: True
+      +schema: zodiac
+      +tags: ['zodiac']
 
 
 snapshots:
