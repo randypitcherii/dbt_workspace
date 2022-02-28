@@ -6,3 +6,4 @@ sources:
     schema: tpch_sf001
     tables:
       - name: orders
+      - name: part
