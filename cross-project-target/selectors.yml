@@ -1,0 +1,12 @@
+selectors:
+  - name: root_project_only
+    description: >
+        Only resources from the cross-project-target project.
+        Excludes resources defined in installed packages, including upstream dbt projects!
+    default: true
+    definition:
+      union:
+        - intersection:
+            - 'package:cross_project_target'
+        - exclude:
+            - 'package:cross_project_source'
