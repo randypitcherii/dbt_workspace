@@ -1,4 +1,12 @@
 selectors:
+  - name: run_dependencies
+    description: >
+       Selector to optionally refresh dependencies from imported packages
+    definition:
+      union:
+        - intersection:
+            - 'package:cross_project_source'
+
   - name: root_project_only
     description: >
         Only resources from the cross-project-target project.
