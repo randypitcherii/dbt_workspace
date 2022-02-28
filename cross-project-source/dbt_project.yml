@@ -1,0 +1,10 @@
+name: 'cross_project_source'
+version: '1.0.0'
+config-version: 2
+
+
+models:
+  cross_project_source:
+    +persist_docs:
+      relation: True
+      columns: True
