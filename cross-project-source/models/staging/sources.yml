@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: tpch
+    database: raw
+    schema: tpch_sf001
+    tables:
+      - name: orders
