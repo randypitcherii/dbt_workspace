@@ -1,0 +1,14 @@
+name: 'cross_project_target'
+version: '1.0.0'
+config-version: 2
+
+model-paths: ["models"]
+
+models:
+  cross_project_target:
+    +persist_docs:
+      relation: True
+      columns: True
+
+
+
