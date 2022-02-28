@@ -1,0 +1,3 @@
+packages:
+  - git: "git@github.com:matt-winkler/dbt_workspace.git"
+    subdirectory: cross-project-source
