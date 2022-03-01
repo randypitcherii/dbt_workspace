@@ -1,4 +1,5 @@
 name: 'cross_project_target'
+
 version: '1.0.0'
 config-version: 2
 
@@ -6,10 +7,18 @@ model-paths: ["models"]
 macro-paths: ["macros"]
 
 models:
+  # this must be set in order to pull data from an upstream project WITHOUT redefining the views / tables in the user's development schema!
+  cross_project_source:
+    staging:
+      +schema: staging
+  
   cross_project_target:
     +persist_docs:
       relation: True
       columns: True
+    marts:
+      +schema: marts
+      
 
 
 
