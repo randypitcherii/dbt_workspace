@@ -8,3 +8,5 @@ models:
     +persist_docs:
       relation: True
       columns: True
+    staging:
+      +schema: staging

@@ -1,4 +1,5 @@
 selectors:
+  # this is optionally run via `dbt run --selector run_dependencies` to refresh upstream data in downstream projects
   - name: run_dependencies
     description: >
        Selector to optionally refresh dependencies from imported packages
@@ -6,15 +7,13 @@ selectors:
       union:
         - intersection:
             - 'package:cross_project_source'
-
+  
+  # this is the default scope for `dbt run`
   - name: root_project_only
     description: >
         Only resources from the cross-project-target project.
         Excludes resources defined in installed packages, including upstream dbt projects!
     default: true
     definition:
-      union:
-        - intersection:
-            - 'package:cross_project_target'
-        - exclude:
-            - 'package:cross_project_source'
+      method: package
+      value: cross_project_target
