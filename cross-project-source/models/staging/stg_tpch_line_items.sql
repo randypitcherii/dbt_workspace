@@ -4,6 +4,8 @@ with source as (
 
 ),
 
+-- comment made directly on master!!!
+
 renamed as (
 
     select
