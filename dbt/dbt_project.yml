@@ -16,6 +16,7 @@ models:
       relation: True
       columns: True
     +materialized: view
+    +pre-hook: "{{ use_role() }}"
     
     snowflake_meta:
       +tags:   ['snowflake_meta']
