@@ -13,10 +13,10 @@ with language_data as (
 ),
 
 assets as (
-    select 1 as id, 'foo' as content, 1 as language_id, 'active' as status
-    union all select 2 as id, 'bar' as content, 1 as language_id, 'deactivated' as status
-    --union all select 3 as id, 'baz' as content, 2 as language_id, 'active' as status
-    union all select 4 as id, 'qux' as content, 2 as language_id, 'deactivated' as status
+    select 1 as id, 'foo' as content, 1 as language_id, 'active' as status, 'something' as new_columns
+    union all select 2 as id, 'bar' as content, 1 as language_id, 'deactivated' as status, 'something' as new_columns
+    --union all select 3 as id, 'baz' as content, 2 as language_id, 'active' as status, 'something' as new_columns
+    union all select 4 as id, 'qux' as content, 2 as language_id, 'deactivated' as status, 'something' as new_columns
 ),
 
 combined as (
