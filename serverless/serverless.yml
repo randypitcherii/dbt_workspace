@@ -1,0 +1,19 @@
+service: serverless
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  hello:
+    handler: handler.get_api_results
+    events:
+      - httpApi:
+          path: /
+          method: get
+          authorizer:
+            type: aws_iam
+
+plugins:
+  - serverless-python-requirements
