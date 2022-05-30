@@ -35,6 +35,8 @@ models:
         +materialized: easy_incremental
       hard_deletes:
         +enabled: True
+      enforce_limit:
+        +post-hook: "{{validate_sql_contains_limit(model)}}"
 
 sources:
   secret:
