@@ -1,17 +1,27 @@
 /*
   --add "{{ store_test_results(results) }}" to an on-run-end: block in dbt_project.yml 
-  --run with dbt build --store-failures. The next v.1.0.X release of dbt will include post run hooks for dbt test! 
+  --The next v.1.0.X release of dbt will include post run hooks for dbt test! 
 */
 {% macro store_test_results(results) %}
+  {% set test_results = [] %}
+
+  {% for result in results if result.node.resource_type == 'test' %}
+    {% set test_results = test_results.append(result) %}
+  {% endfor %}
+
+  {% if test_results|length == 0 %}
+    {{ log("store_test_results found no test results to process.") if execute }}
+    {{ return('') }}
+  {% endif %}
 
   {%- set central_tbl -%} {{ target.schema }}.test_results_central {%- endset -%}
   {%- set history_tbl -%} {{ target.schema }}.test_results_history {%- endset -%}
   
-  {{ log("Centralizing test data in " + central_tbl, info = true) if execute }}
+  {{ log("Centralizing " ~ test_results|length ~ " test results in " + central_tbl, info = true) if execute }}
 
   create or replace table {{ central_tbl }} as (
   
-  {% for result in results if result.node.resource_type == 'test' %}
+  {% for result in test_results %}
 
     {% set test_name='' %}
     {% set test_type='' %}
