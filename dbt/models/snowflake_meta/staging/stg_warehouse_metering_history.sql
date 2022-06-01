@@ -1,4 +1,4 @@
-{{ config(tags=["snowflake_meta", "daily"], materialized='incremental', transient=true) }}
+{{ config(tags=["snowflake_meta", "daily"], materialized='incremental', transient=true, schema='whs') }}
 
 WITH HISTORY AS (
   SELECT 

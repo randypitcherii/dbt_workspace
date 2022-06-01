@@ -1,7 +1,7 @@
 {{ 
     config(
         pre_hook='use role ' ~ target.role , 
-        post_hook='use role ' ~ target.role 
+        post_hook='use role public' 
     ) 
 }}
 
