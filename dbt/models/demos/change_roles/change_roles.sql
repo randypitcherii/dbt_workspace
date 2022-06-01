@@ -5,4 +5,4 @@
     ) 
 }}
 
-select 1 as my_column
+select 2 as my_column
