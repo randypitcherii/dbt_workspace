@@ -1,0 +1,30 @@
+name: dbt - PR validation
+
+pr: [ master ] # runs on PRs against master
+trigger: none  # turn off generic CI that builds on every commit by default 
+
+variables:
+  DBT_URL:                 https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
+  DBT_JOB_CAUSE:           'Azure DevOps PR Job' # provide a descriptive job cause here for easy debugging down the road
+  DBT_ACCOUNT_ID:          7551
+  DBT_PROJECT_ID:          28299
+  DBT_PR_JOB_ID:           24598
+  DBT_JOB_SCHEMA_OVERRIDE: PR_ADO_BUILD_$(Build.QueuedById)
+  DBT_JOB_BRANCH:          $(System.PullRequest.SourceBranch)
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
+    displayName: 'Use Python 3.7'
+
+  - script: |
+      pip install requests
+    displayName: 'Install python dependencies'
+
+  - script: |
+      python -u ./python/run_and_monitor_dbt_cloud_job.py
+    displayName: 'Run dbt job '
+    env:
+      DBT_API_KEY: $(DBT_API_KEY) # Set these values as secrets in the Azure pipelines web UI
+            

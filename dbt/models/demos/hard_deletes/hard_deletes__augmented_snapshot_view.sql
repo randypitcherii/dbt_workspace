@@ -1,0 +1,1 @@
+{{ create_augmented_snapshot(ref('hard_deletes__snapshot'), 'ORDER_ID') }}

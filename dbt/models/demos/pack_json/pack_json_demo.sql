@@ -1,6 +1,8 @@
 select 
     warehouse_name, 
     warehouse_id,
-    {{pack_json()}} as new_name_for_variant
+    {{pack_json(ref('stg_warehouse_metering_history'), except=['json'])}} as json
     
 from {{ref('stg_warehouse_metering_history')}}
+
+-- {{this}}

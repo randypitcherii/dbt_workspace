@@ -1,0 +1,33 @@
+name: dbt Production Run on Push to Master 
+
+on: 
+  push:
+    branches: 
+      - master
+
+jobs:
+  run_dbt_on_merge_to_master:
+    name: dbt Production Run on Push to Master
+    runs-on: ubuntu-latest
+
+    env:
+      DBT_API_KEY:             ${{ secrets.DBT_API_KEY }}
+      DBT_URL:                 https://cloud.getdbt.com # no trailing backslash. Change this for single tenant deployments to your actual base url
+      DBT_JOB_CAUSE:           'Github Actions - Push to Master' # provide a descriptive job cause here for easy debugging down the road
+      DBT_ACCOUNT_ID:          7551
+      DBT_PROJECT_ID:          28299
+      DBT_PR_JOB_ID:           23095
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    - name: Trigger dbt job
+      run: |
+        python -u ./python/run_and_monitor_dbt_cloud_job.py

@@ -1,47 +1,66 @@
-
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
-name: 'dbt_workspace'
+name: 'secret'
 version: '1.0.0'
 config-version: 2
 
-# This setting configures which "profile" dbt uses for this project.
-profile: 'default'
-
-# These configurations specify where dbt should look for different types of files.
-# The `source-paths` config, for example, states that models in this project can be
-# found in the "models/" directory. You probably won't need to change these!
-source-paths: ["models"]
-analysis-paths: ["analysis"]
-test-paths: ["tests"]
-data-paths: ["data"]
-macro-paths: ["macros"]
-snapshot-paths: ["snapshots"]
-
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
-    - "target"
-    - "dbt_modules"
+profile: default
 
 vars:
   my_cool_var: '2016-06-01'
+  snowflake_meta_src_db: 'snowflake' # override this with -> dbt run --vars "'snowflake_meta_src_db': 'my_snowflake_meta_src_db'"
 
 # on-run-start: 'CALL {{stored_proc__pi()}}();'
 
 models:
-  dbt_workspace:
+  secret:
+    +persist_docs:
+      relation: True
+      columns: True
     +materialized: view
+    
+    snowflake_meta:
+      +tags:   ['snowflake_meta']
+      +schema: snowflake_meta
+      staging:
+        +post-hook: "{{validate_model_name(this, ruleset='stage')}}"
+
     demos:
-      easy_incremental:
-        +materialized: easy_incremental
-        +watermark: watermark
       custom_schema:
-        +materialized: table
-        +schema: demo_schema
+        # +schema:       custom_schema  
+        +materialized: table  
+      netflix:
+        +tags:    netflix
+        # +schema:  netflix
+        +enabled: False
+      easy_incremental:
+        +watermark:    watermark
+        +materialized: easy_incremental
+      hard_deletes:
+        +enabled: True
+
+sources:
+  secret:
+    snowflake_meta:
+      +tags: ['snowflake_meta']
+
+seeds:
+  secret:
+    +enabled: False # disabled because these sources are static and take a few minutes to upload.
+    tpch:
+      +schema: tpch
+      +tags: ['tpch']
+    jaffle_shop:
+      +schema: jaffle
+      +tags: ['jaffle']
 
 
+snapshots:
+  secret:
+    snowflake_meta:
+      +enabled: True
+      +tags: ['snowflake_meta']
+      +target_schema: "{{ 'snowflake_meta' if 'prod' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
 
-
+    hard_deletes:
+      +enabled: True
 
 
