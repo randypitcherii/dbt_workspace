@@ -1,4 +1,4 @@
-{{ config(materialized='easy_incremental', watermark='date_added') }}
+{{ config(materialized='copy_into') }}
 
 select
     {{ get_stage_columns_from_loading_config(

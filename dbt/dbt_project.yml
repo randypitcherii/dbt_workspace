@@ -29,13 +29,14 @@ models:
         +materialized: table  
       netflix:
         +tags:    netflix
-        # +schema:  netflix
-        +enabled: False
+        +enabled: True
       easy_incremental:
         +watermark:    watermark
         +materialized: easy_incremental
       hard_deletes:
         +enabled: True
+      enforce_limit:
+        +post-hook: "{{validate_sql_contains_limit(model)}}"
 
 sources:
   secret:
@@ -51,6 +52,10 @@ seeds:
     jaffle_shop:
       +schema: jaffle
       +tags: ['jaffle']
+    zodiac:
+      +enabled: True
+      +schema: zodiac
+      +tags: ['zodiac']
 
 
 snapshots:
