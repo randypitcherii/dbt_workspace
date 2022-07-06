@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: hard_deletes__snapshot_passthrough 
+    columns:
+      - name: surrogate_key
+        tests:
+          - unique
+          - not_null
+  - name: hard_deletes__snapshot
+    columns:
+      - name: order_id
+        tests:
+          - not_null
