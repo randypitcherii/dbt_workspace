@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name:     external_adls_stage_database
+    database: STEVE_D_RAW_DATA
+    schema:   EXTERNAL_STAGES_SAMPLES
+    loader:   snowflake_external_stage # informational only (free text)
+    
+    tables:
+      - name: azure_adls_external_stage
