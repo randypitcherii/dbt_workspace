@@ -6,11 +6,11 @@
 **On the dbt side:** 
 
 1. Need to add the `copy_into` materialization macro into your `/macros` folder
-    - This marco can be found [here on github](dbt/macros/materializations/copy_into/copy_into.sql)
+    - This marco can be found [here on github](../../../../macros/materializations/copy_into/copy_into.sql)
 2. Need to create a YAML source file or leverage an existing source file and add in your external stage information
-    - An example of a source file for this can be found [here on github](dbt/models/demos/snowflake_copy_into/copy_into_demo_src.yml)
+    - An example of a source file for this can be found [here on github](../copy_into_demo_src.yml)
 3. Need to create a model that selects from the external stage, this model is where a table will be created and COPY INTO will be run into that table every time the dbt model is run
-    - An example of this model can be found [here on github](/Users/stevedowling/Documents/Repos/Randy_dbt_workspace/dbt_workspace/dbt/models/demos/snowflake_copy_into/copy_into_demo.sql)
+    - An example of this model can be found [here on github](../copy_into_demo.sql)
     
 
 **On the Snowflake side:**
