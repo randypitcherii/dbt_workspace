@@ -5,7 +5,9 @@
 -- I also provide a file format that I created in snowflake, in this file format I provide <DATABASE>.<SCHEMA>.<FILE_FORMAT_NAME>
 -- File formats live inside a database & schema so you need these prefixes to pick up the right ones
 
-{{ config(materialized='copy_into') }}
+{{ config(materialized='copy_into',
+          copy_into_on_error='skip_file'
+) }}
 
 Select
     $1::NUMBER Price,
