@@ -9,6 +9,7 @@ vars:
   snowflake_meta_src_db: 'snowflake' # override this with -> dbt run --vars "'snowflake_meta_src_db': 'my_snowflake_meta_src_db'"
 
 # on-run-start: 'CALL {{stored_proc__pi()}}();'
+on-run-end: "{{ error_on_empty_runs() }}"
 
 models:
   secret:
