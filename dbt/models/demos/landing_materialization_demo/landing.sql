@@ -1,4 +1,4 @@
-{{config(materialized='landing')}}
+{{config(materialized='raw_sql')}}
 
 CREATE OR REPLACE TABLE {{this.database}}.{{this.schema}}.{{this.identifier}}
 
