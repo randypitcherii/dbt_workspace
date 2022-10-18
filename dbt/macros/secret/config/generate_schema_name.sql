@@ -5,7 +5,7 @@
     {% do log(log_msg, False) %}
 
     {%- if custom_schema_name -%}
-        {{ custom_schema_name if 'prod' in target.name.lower() else target.schema ~ '__' ~ custom_schema_name }}
+        {{ custom_schema_name if 'prod' in target.name.lower() else 'dbt_rpitcher__' ~ custom_schema_name }}
     {%- else -%}
         {{ default_schema }} 
     {%- endif -%}

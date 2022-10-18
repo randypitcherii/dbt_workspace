@@ -13,6 +13,10 @@ vars:
 models:
   secret:
     +schema: coalesce
+    coalesce-2022:
+      coalesce_tidy_up:
+        pre-hook: '{{clean_workspace(dry_run=True)}}'
+        post-hook: 'drop {{this}}'
     secret:
       +enabled: False
 
@@ -39,6 +43,7 @@ seeds:
 snapshots:
   secret:
     +schema: coalesce
+
     snowflake_meta:
       +enabled: False
       +tags: ['snowflake_meta']
