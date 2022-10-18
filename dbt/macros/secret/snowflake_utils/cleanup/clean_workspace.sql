@@ -21,6 +21,10 @@ Example 3 - full clean :)
 #}
 
 {% macro clean_workspace(database=target.database, dry_run=True, schema_like=None, schema_not_like=None) %}
+    {% if not execute %}
+        {{ return('no cleaning whennot executing!') }}
+    {% endif %}
+    
     {%- set msg -%}
         Starting clean_workspace...
           database:        {{database}} 
@@ -52,11 +56,13 @@ Example 3 - full clean :)
 
 
     {% for drop_query in drop_queries %}
-        {% if execute and not dry_run %}
+        {% if dry_run %}
+            {{ log(drop_query, info=True) }}
+
+        {% else %}
             {{ log('Dropping schema with command: ' ~ drop_query, info=True) }}
             {% do run_query(drop_query) %}    
-        {% else %}
-            {{ log(drop_query, info=True) }}
+
         {% endif %}
     {% endfor %}
 {% endmacro %}

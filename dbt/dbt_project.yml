@@ -12,6 +12,7 @@ vars:
 
 models:
   secret:
+    +schema: coalesce
     secret:
       +enabled: False
 
@@ -31,12 +32,13 @@ seeds:
       +tags: ['jaffle']
     zodiac:
       +enabled: True
-      +schema: zodiac
+      +schema: coalesce
       +tags: ['zodiac']
 
 
 snapshots:
   secret:
+    +schema: coalesce
     snowflake_meta:
       +enabled: False
       +tags: ['snowflake_meta']
