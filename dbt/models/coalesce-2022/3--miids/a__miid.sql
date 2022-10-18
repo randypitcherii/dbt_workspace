@@ -8,7 +8,7 @@
     {{this.database}}.{{this.schema}}.{{this.identifier}}
 {% endset %}
 
-create or replace table 
+create table if not exists  
 {{name}} (
     miid         number autoincrement start 1 increment 1,
     natural_key  string,
