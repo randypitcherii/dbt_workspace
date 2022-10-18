@@ -5,4 +5,4 @@
     )
 }}
 
-select * from {{ ref('incremental_source') }}
+select * from {{ ref('a__incremental_source') }}

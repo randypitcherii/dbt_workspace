@@ -7,6 +7,6 @@
 select 
     current_timestamp as processed_at,
     zodiac as zodiac_sign,
-    'blue' as color
+    'purple' as color
     
 from {{ ref('zodiac') }}

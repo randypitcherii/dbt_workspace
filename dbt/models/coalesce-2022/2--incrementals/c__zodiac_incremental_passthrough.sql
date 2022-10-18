@@ -5,7 +5,7 @@ select
     zodiac_sign,
     color
 
-from {{ ref('zodiac_incremental') }}
+from {{ ref('b__zodiac_incremental') }}
 
 order by processed_at desc, zodiac_sign asc
 

@@ -8,6 +8,8 @@
     {{this.database}}.{{this.schema}}.{{this.identifier}}
 {% endset %}
 
+-- create miids incrementally for {{ ref('a__incremental_source') }}
+
 create table if not exists  
 {{name}} (
     miid         number autoincrement start 1 increment 1,
