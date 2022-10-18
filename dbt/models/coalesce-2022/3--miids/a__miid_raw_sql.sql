@@ -10,7 +10,8 @@
 
 create or replace table 
 {{name}} (
-    id number autoincrement start 1 increment 1,
+    miid number autoincrement start 1 increment 1,
     zodiac_sign string,
     color string 
 );
+
