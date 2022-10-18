@@ -16,7 +16,7 @@ models:
     coalesce-2022:
       coalesce_tidy_up:
         pre-hook: '{{clean_workspace(dry_run=True)}}'
-        post-hook: 'drop {{this}}'
+        post-hook: 'drop view {{this}}'
     secret:
       +enabled: False
 
