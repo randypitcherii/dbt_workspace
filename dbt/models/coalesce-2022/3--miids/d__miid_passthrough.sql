@@ -1,6 +1,6 @@
 
 
-select * from {{ ref('b__miid') }}
+select * from {{ ref('a__miid') }}
 
 
 
