@@ -12,31 +12,8 @@ vars:
 
 models:
   secret:
-    +persist_docs:
-      relation: True
-      columns: True
-    +materialized: view
-    
-    snowflake_meta:
-      +tags:   ['snowflake_meta']
-      +schema: snowflake_meta
-      staging:
-        +post-hook: "{{validate_model_name(this, ruleset='stage')}}"
-
-    demos:
-      custom_schema:
-        # +schema:       custom_schema  
-        +materialized: table  
-      netflix:
-        +tags:    netflix
-        +enabled: True
-      easy_incremental:
-        +watermark:    watermark
-        +materialized: easy_incremental
-      hard_deletes:
-        +enabled: True
-      enforce_limit:
-        +post-hook: "{{validate_sql_contains_limit(model)}}"
+    secret:
+      +enabled: False
 
 sources:
   secret:
@@ -53,7 +30,6 @@ seeds:
       +schema: jaffle
       +tags: ['jaffle']
     zodiac:
-      +enabled: True
       +schema: zodiac
       +tags: ['zodiac']
 
@@ -61,11 +37,11 @@ seeds:
 snapshots:
   secret:
     snowflake_meta:
-      +enabled: True
+      +enabled: False
       +tags: ['snowflake_meta']
       +target_schema: "{{ 'snowflake_meta' if 'prod' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
 
     hard_deletes:
-      +enabled: True
+      +enabled: False
 
 
