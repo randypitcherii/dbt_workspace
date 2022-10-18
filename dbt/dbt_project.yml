@@ -30,6 +30,7 @@ seeds:
       +schema: jaffle
       +tags: ['jaffle']
     zodiac:
+      +enabled: True
       +schema: zodiac
       +tags: ['zodiac']
 

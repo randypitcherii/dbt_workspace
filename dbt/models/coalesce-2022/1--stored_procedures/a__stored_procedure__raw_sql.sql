@@ -1,6 +1,7 @@
 {{
     config(
-        materialized='raw_sql'
+        materialized='raw_sql',
+        post_hook='CALL {{this}}()'
     )
 }}
 
@@ -13,7 +14,7 @@ returns float not null
 language javascript
 as
 $$
-    return 3.1415926;
+    return 3.14;
 $$
 ;
     
