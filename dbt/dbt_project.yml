@@ -21,7 +21,7 @@ models:
       +tags:   ['snowflake_meta']
       +schema: snowflake_meta
       staging:
-        +post-hook: "{{validate_model_name(this, ruleset='stage')}}"
+        +post-hook: "{{validate_model_name(model)}}"
 
     demos:
       custom_schema:
