@@ -1,5 +1,7 @@
 {% materialization copy_into, adapter='snowflake' %}
 
+    {%- set copy_into_on_error = config.get('copy_into_on_error') -%}
+
     {% set original_query_tag = set_query_tag() %}
 
     {%- set identifier = model['alias'] -%}
@@ -17,12 +19,26 @@
         {%- endcall -%}
     {% endif %}
 
-    {%- call statement('main') -%}
-        COPY INTO {{target_relation}} 
-        FROM ( 
-            {{sql}} 
-        )
-    {%- endcall -%}
+    {% if copy_into_on_error == none %}
+
+        {%- call statement('main') -%}
+            COPY INTO {{target_relation}} 
+            FROM ( 
+                {{sql}} 
+            )
+        {%- endcall -%}
+
+    {% else %}
+
+        {%- call statement('main') -%}
+            COPY INTO {{target_relation}} 
+            FROM ( 
+                {{sql}} 
+            )
+            ON_ERROR = '{{copy_into_on_error}}'
+        {%- endcall -%}
+
+    {% endif %}
 
 
     {{ run_hooks(post_hooks) }}
