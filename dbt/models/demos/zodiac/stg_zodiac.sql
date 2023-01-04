@@ -6,8 +6,8 @@
     )
 }}
 
-{% set min_date = '(select min(date_start) from ' ~ ref('zodiac') ~ ')' %}
-{% set max_date = '(select max(date_end)   from ' ~ ref('zodiac') ~ ')' %}
+{% set min_date = '(select min(date_start) from ' ~ source('zodiac', 'zodiac') ~ ')' %}
+{% set max_date = '(select max(date_end)   from ' ~ source('zodiac', 'zodiac') ~ ')' %}
 
 with
 
@@ -24,7 +24,7 @@ select
     ZODIAC AS ZODIAC_SIGN
 
 from 
-    dim_days join {{ ref('zodiac') }}
+    dim_days join {{ source('zodiac', 'zodiac') }}
     on date_day between date_start and date_end
 
 union all

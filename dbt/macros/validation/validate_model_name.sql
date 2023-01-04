@@ -4,7 +4,7 @@
     {% endif %}
 
     {% set path=model_to_validate.path %}
-    {% set name=model_to_validate.identifier %}
+    {% set name=model_to_validate.name %}
 
     {# validate stages have the proper prefix #}
     {% if '/staging/' in path and not name.startswith('stg_') %}

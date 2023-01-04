@@ -2,70 +2,19 @@ name: 'secret'
 version: '1.0.0'
 config-version: 2
 
-profile: default
-
 vars:
   my_cool_var: '2016-06-01'
-  snowflake_meta_src_db: 'snowflake' # override this with -> dbt run --vars "'snowflake_meta_src_db': 'my_snowflake_meta_src_db'"
-
-# on-run-start: 'CALL {{stored_proc__pi()}}();'
 
 models:
   secret:
-    +persist_docs:
-      relation: True
-      columns: True
     +materialized: view
-    
-    snowflake_meta:
-      +tags:   ['snowflake_meta']
-      +schema: snowflake_meta
-      staging:
-        +post-hook: "{{validate_model_name(model)}}"
+    +schema: secret
+    +post-hook: "{{validate_model_name(model)}}"
 
     demos:
-      custom_schema:
-        # +schema:       custom_schema  
-        +materialized: table  
-      netflix:
-        +tags:    netflix
-        +enabled: True
-      easy_incremental:
-        +watermark:    watermark
-        +materialized: easy_incremental
-      hard_deletes:
-        +enabled: True
       enforce_limit:
         +post-hook: "{{validate_sql_contains_limit(model)}}"
-
-sources:
-  secret:
-    snowflake_meta:
-      +tags: ['snowflake_meta']
 
 seeds:
   secret:
     +enabled: False # disabled because these sources are static and take a few minutes to upload.
-    tpch:
-      +schema: tpch
-      +tags: ['tpch']
-    jaffle_shop:
-      +schema: jaffle
-      +tags: ['jaffle']
-    zodiac:
-      +enabled: True
-      +schema: zodiac
-      +tags: ['zodiac']
-
-
-snapshots:
-  secret:
-    snowflake_meta:
-      +enabled: True
-      +tags: ['snowflake_meta']
-      +target_schema: "{{ 'snowflake_meta' if 'prod' in target.name.lower() else target.schema ~ '__snowflake_meta' }}"
-
-    hard_deletes:
-      +enabled: True
-
-
