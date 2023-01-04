@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name:     netflix
-    database: randy_pitcher_workspace_raw
+    database: "@randy_pitcher_workspace_raw"
     schema:   netflix_loading
     loader:   snowflake_external_stage # informational only (free text)
 

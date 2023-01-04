@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: zodiac
+    database: randy_pitcher_workspace_raw
+    schema: zodiac
+    tables:
+      - name: zodiac
+   
