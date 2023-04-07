@@ -1,10 +1,12 @@
-{% macro teardown_stored_procedures_demo(dry_run=True) %}
+{% macro teardown_stored_procedures_demo(project_name='sp_to_dbt', dry_run=True) %}
     {# goodnight sweet prince #} 
-    {% set teardown_sql=get_workspace_teardown_script('sp_to_dbt') %}
+    {% set sql=get_workspace_teardown_script(project_name) %}
 
     {% if dry_run %}
-        {% do log(teardown_sql, True) %}
+        {% do log(sql, True) %}
     {% else %}
-        {% do run_query(teardown_sql) %}
+        {% do run_query(sql) %}
     {% endif %}
+
+    {{ return(sql) }}
 {% endmacro %}

@@ -1,4 +1,4 @@
-{% macro build_and_process_stored_procedures_demo(project_name, dry_run) %}
+{% macro build_and_process_stored_procedures_demo(project_name, dry_run=True) %}
     {% set sql %}
         -- schema
         CREATE SCHEMA IF NOT EXISTS {{project_name}}.STORED_PROCEDURES;
@@ -242,11 +242,13 @@
         GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS; 
         GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{project_name}}_READ;
     {% endset %}
-    
+
 
     {% if dry_run %}
         {% do log(sql, True) %}
     {% else %}
         {% do run_query(sql) %}
     {% endif %}
+
+    {{ return(sql) }}
 {% endmacro %}
