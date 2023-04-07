@@ -4,7 +4,7 @@ The following problems are associated with data pipelines that rely on stored pr
 - manual ordering of operations within and across stored procedures
 - no concurrency without advanced effort
 - painful to change or update. You must understand the whole pipeline to safely make a change
-- difficult to debug (errors in SP03 may be the result of code in SP01)
+- difficult to debug (difficult to access logs, errors in SP03 may be the result of code in SP01)
 - failures block every subsequent command. 
 - too many hard-coded references. Difficult to ensure dev/ci/prod environment isolation.
 - absolutely no data quality testing

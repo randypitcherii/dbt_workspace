@@ -11,8 +11,9 @@ RETURNS STRING
 LANGUAGE JAVASCRIPT
 AS
 $$
+  try { // try/catch it all
   //=========================================================================
-  // initial schema setup
+  // initial setup
   //=========================================================================
   // schema
   snowflake.execute({sqlText: "CREATE SCHEMA IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS;"});
@@ -34,7 +35,8 @@ $$
     );`});
 
   // snowpipe history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
+  snowflake.execute({sqlText: `
+    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
     AS (
       SELECT
         PIPE_ID,
@@ -54,10 +56,12 @@ $$
         CURRENT_TIMESTAMP AS INGESTION_TIME
       FROM
         SNOWFLAKE.ACCOUNT_USAGE.PIPES
-    );`});
+    );
+  `});
 
   // snowpipe usage history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
+  snowflake.execute({sqlText: `
+    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
     AS (
       SELECT
         PIPE_ID,
@@ -70,10 +74,12 @@ $$
         CURRENT_TIMESTAMP AS INGESTION_TIME
       FROM
         SNOWFLAKE.ACCOUNT_USAGE.PIPE_USAGE_HISTORY
-    );`});
+    );
+  `});
 
   // query history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
+  snowflake.execute({sqlText: `
+    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
     AS (
       SELECT
         QUERY_ID,
@@ -131,46 +137,68 @@ $$
         CURRENT_TIMESTAMP AS INGESTION_TIME
       FROM
         SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
-    );`});
+    );
+  `});
 
-  // Tasks history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASKS (
-    CREATED_ON TIMESTAMP_LTZ,
-    NAME STRING,
-    DATABASE_NAME STRING,
-    SCHEMA_NAME STRING,
-    OWNER STRING,
-    COMMENT STRING,
-    WAREHOUSE STRING,
-    SCHEDULE STRING,
-    PREDECESSOR STRING,
-    STATE STRING,
-    DEFINITION STRING,
-    CONDITION STRING,
-    INGESTION_TIME TIMESTAMP_LTZ
-  );`});
+  // Task versions
+  snowflake.execute({sqlText: `
+    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS AS (
+      SELECT
+        ROOT_TASK_ID,
+        GRAPH_VERSION,
+        GRAPH_VERSION_CREATED_ON,
+        NAME,
+        ID,
+        DATABASE_ID,
+        DATABASE_NAME,
+        SCHEMA_ID,
+        SCHEMA_NAME,
+        OWNER,
+        COMMENT,
+        WAREHOUSE_NAME,
+        SCHEDULE,
+        PREDECESSORS,
+        STATE,
+        DEFINITION,
+        CONDITION_TEXT,
+        ALLOW_OVERLAPPING_EXECUTION,
+        ERROR_INTEGRATION,
+        LAST_COMMITTED_ON,
+        LAST_SUSPENDED_ON,
+        CURRENT_TIMESTAMP AS INGESTION_TIME
+      FROM
+        SNOWFLAKE.ACCOUNT_USAGE.TASK_VERSIONS
+    );
+  `});
 
-  // Task usage history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_USAGE_HISTORY(
-    QUERY_ID STRING,
-    NAME STRING,
-    DATABASE_NAME STRING,
-    SCHEMA_NAME STRING,
-    QUERY_TEXT STRING,
-    CONDITION_TEXT STRING,
-    STATE STRING,
-    ERROR_CODE STRING,
-    ERROR_MESSAGE STRING,
-    SCHEDULED_TIME TIMESTAMP_LTZ,
-    QUERY_START_TIME TIMESTAMP_LTZ,
-    NEXT_SCHEDULED_TIME TIMESTAMP_LTZ,
-    COMPLETED_TIME TIMESTAMP_LTZ,
-    ROOT_TASK_ID STRING,
-    GRAPH_VERSION NUMBER,
-    RUN_ID NUMBER,
-    RETURN_VALUE STRING,
-    INGESTION_TIME TIMESTAMP_LTZ
-  );`});
+  // Task history
+  snowflake.execute({sqlText: `
+    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY AS (
+      SELECT
+        NAME,
+        QUERY_TEXT,
+        CONDITION_TEXT,
+        SCHEMA_NAME,
+        TASK_SCHEMA_ID,
+        DATABASE_NAME,
+        TASK_DATABASE_ID,
+        SCHEDULED_TIME,
+        COMPLETED_TIME,
+        STATE,
+        RETURN_VALUE,
+        QUERY_ID,
+        QUERY_START_TIME,
+        ERROR_CODE,
+        ERROR_MESSAGE,
+        GRAPH_VERSION,
+        RUN_ID,
+        ROOT_TASK_ID,
+        SCHEDULED_FROM,
+        CURRENT_TIMESTAMP AS INGESTION_TIME
+      FROM
+        SNOWFLAKE.ACCOUNT_USAGE.TASK_HISTORY
+    );
+  `});
   //=========================================================================
 
 
@@ -178,11 +206,15 @@ $$
   // account_usage cdc and snapshotting
   //=========================================================================
   // warehouse metering history
-  const warehouseCursor = snowflake.execute({sqlText: `SELECT COALESCE(MAX(START_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY;`});
-  const warehouseCursorResult = warehouseCursor.next();
-  const warehouseCursorValue = warehouseCursorResult.CURSOR;
+  const warehouseCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(START_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY;
+  `});
+  warehouseCursorResultSet.next(); // prepare result set to retrieve next value
+  const warehouseCursorValue = warehouseCursorResultSet.getColumnValueAsString(1);
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY
     SELECT
       START_TIME,
       END_TIME,
@@ -193,19 +225,22 @@ $$
       CREDITS_USED_CLOUD_SERVICES,
       CURRENT_TIMESTAMP AS INGESTION_TIME
     FROM
-      TABLE(SYSTEM$ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY(
-        START_TIME_RANGE_START => '${warehouseCursorValue}',
-        END_TIME_RANGE_START => '${warehouseCursorValue}'
-      ));`});
+      SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY
+    WHERE
+      END_TIME > '${warehouseCursorValue}'
+  `});
+
 
   // snowpipe history
-  const snowpipeCursor = snowflake.execute({
-    sqlText: `SELECT COALESCE(MAX(CREATED), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES;`
-  });
-  const snowpipeCursorResult = snowpipeCursor.next();
-  const snowpipeCursorValue = snowpipeCursorResult.CURSOR;
+  const snowpipeCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(CREATED), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES;
+  `});
+  snowpipeCursorResultSet.next(); // prepare result set to retrieve next value
+  const snowpipeCursorValue = snowpipeCursorResultSet.getColumnValueAsString(1);
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
     SELECT
       PIPE_ID,
       PIPE_NAME,
@@ -223,20 +258,22 @@ $$
       DELETED,
       CURRENT_TIMESTAMP AS INGESTION_TIME
     FROM
-      TABLE(SYSTEM$ACCOUNT_USAGE.PIPES(
-        CREATED_RANGE_START => '${snowpipeCursorValue}',
-        LAST_ALTERED_RANGE_START => '${snowpipeCursorValue}',
-        SHOW_DELETED_OBJECTS => TRUE
-      ));`});
+      SNOWFLAKE.ACCOUNT_USAGE.PIPES
+    WHERE
+      LAST_ALTERED > '${snowpipeCursorValue}';
+  `});
+
 
   // snowpipe usage history
-  const pipeUsageCursor = snowflake.execute({
-    sqlText: `SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY;`
-  });
-  const pipeUsageCursorResult = pipeUsageCursor.next();
-  const pipeUsageCursorValue = pipeUsageCursorResult.CURSOR;
+  const pipeUsageCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY;
+  `});
+  pipeUsageCursorResultSet.next(); // prepare result set to retrieve next value
+  const pipeUsageCursorValue = pipeUsageCursorResultSet.getColumnValueAsString(1);
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
     SELECT
       PIPE_ID,
       PIPE_NAME,
@@ -249,14 +286,20 @@ $$
     FROM
       SNOWFLAKE.ACCOUNT_USAGE.PIPE_USAGE_HISTORY
     WHERE
-      END_TIME > '${snowpipeCursorValue}';`});
+      END_TIME > '${pipeUsageCursorValue}';
+  `});
+
 
   // query history
-  const queryCursor = snowflake.execute({sqlText: `SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY;`});
-  const queryCursorResult = queryCursor.next();
-  const queryCursorValue = queryCursorResult.CURSOR;
+  const queryHistoryCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY;
+  `});
+  queryHistoryCursorResultSet.next(); // prepare result set to retrieve next value
+  const queryHistoryCursorValue = queryHistoryCursorResultSet.getColumnValueAsString(1);
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
     SELECT
       QUERY_ID,
       QUERY_TEXT,
@@ -314,67 +357,95 @@ $$
     FROM
       SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
     WHERE
-      END_TIME > '${queryCursorValue}';`});
+      END_TIME > '${queryHistoryCursorValue}';
+  `});
       
-  // Tasks history
-  const taskCursor = snowflake.execute({sqlText: `SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASKS;`});
-  const taskCursorResult = taskCursor.next();
-  const taskCursorValue = taskCursorResult.CURSOR;
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASKS
+  // Tasks history
+  const taskCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASKS;
+  `});
+  taskCursorResultSet.next(); // prepare result set to retrieve next value
+  const taskCursorValue = taskCursorResultSet.getColumnValueAsString(1);
+
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS
     SELECT
-      CREATED_ON,
+      ROOT_TASK_ID,
+      GRAPH_VERSION,
+      GRAPH_VERSION_CREATED_ON,
       NAME,
+      ID,
+      DATABASE_ID,
       DATABASE_NAME,
+      SCHEMA_ID,
       SCHEMA_NAME,
       OWNER,
       COMMENT,
-      WAREHOUSE,
+      WAREHOUSE_NAME,
       SCHEDULE,
-      PREDECESSOR,
+      PREDECESSORS,
       STATE,
       DEFINITION,
-      CONDITION,
+      CONDITION_TEXT,
+      ALLOW_OVERLAPPING_EXECUTION,
+      ERROR_INTEGRATION,
+      LAST_COMMITTED_ON,
+      LAST_SUSPENDED_ON,
       CURRENT_TIMESTAMP AS INGESTION_TIME
     FROM
-      SNOWFLAKE.ACCOUNT_USAGE.TASKS
+      SNOWFLAKE.ACCOUNT_USAGE.TASK_VERSIONS
     WHERE
-      INGESTION_TIME > '${taskCursorValue}';`});
+      GRAPH_VERSION_CREATED_ON > '${taskCursorValue}';
+  `});
+
 
   // Task usage history
-  const taskUsageCursor = snowflake.execute({
-    sqlText: `SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_USAGE_HISTORY;`
-  });
-  const taskUsageCursorResult = taskUsageCursor.next();
-  const taskUsageCursorValue = taskUsageCursorResult.CURSOR;
+  const taskUsageCursorResultSet = snowflake.execute({sqlText: `
+    SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_USAGE_HISTORY;
+  `});
+  taskUsageCursorResultSet.next(); // prepare result set to retrieve next value
+  const taskUsageCursorValue = taskUsageCursorResultSet.getColumnValueAsString(1);
 
-  snowflake.execute({sqlText: `INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_USAGE_HISTORY
+  snowflake.execute({sqlText: `
+    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY
     SELECT
-      QUERY_ID,
       NAME,
-      DATABASE_NAME,
-      SCHEMA_NAME,
       QUERY_TEXT,
-      CONDITION_TEXT
+      CONDITION_TEXT,
+      SCHEMA_NAME,
+      TASK_SCHEMA_ID,
+      DATABASE_NAME,
+      TASK_DATABASE_ID,
+      SCHEDULED_TIME,
+      COMPLETED_TIME,
       STATE,
+      RETURN_VALUE,
+      QUERY_ID,
+      QUERY_START_TIME,
       ERROR_CODE,
       ERROR_MESSAGE,
-      SCHEDULED_TIME,
-      QUERY_START_TIME,
-      NEXT_SCHEDULED_TIME,
-      COMPLETED_TIME,
-      ROOT_TASK_ID,
       GRAPH_VERSION,
       RUN_ID,
-      RETURN_VALUE,
+      ROOT_TASK_ID,
+      SCHEDULED_FROM,
       CURRENT_TIMESTAMP AS INGESTION_TIME
     FROM
-      SNOWFLAKE.ACCOUNT_USAGE.TASK_USAGE_HISTORY
+      SNOWFLAKE.ACCOUNT_USAGE.TASK_HISTORY
     WHERE
-      INGESTION_TIME > '${taskUsageCursorValue}';`});
+      INGESTION_TIME > '${taskUsageCursorValue}';
+  `});
   //=========================================================================
 
 
+  } catch (err)  {
+    var result =  "Failed: Code: " + err.code + "\n  State: " + err.state;
+    result += "\n  Message: " + err.message;
+    result += "\nStack Trace:\n" + err.stackTraceTxt; 
+    return result;
+  }
+
   return "Success";
 $$;
-
