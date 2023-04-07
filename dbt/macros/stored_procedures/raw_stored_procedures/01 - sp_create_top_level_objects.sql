@@ -1,9 +1,9 @@
 -- execute as sysadmin
 
 CREATE OR REPLACE PROCEDURE 
-RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_DATA_RESOURCES(
-  PROJECT_NAME VARCHAR, 
-  DRY_RUN BOOLEAN
+RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_TOP_LEVEL_OBJECTS(
+    PROJECT_NAME VARCHAR, 
+    DRY_RUN      BOOLEAN
 )
 RETURNS STRING
 LANGUAGE JAVASCRIPT
@@ -54,31 +54,26 @@ $$
 
     // execute
     var currCommand = 'not yet set';
-    if (!DRY_RUN) {
+    if (DRY_RUN) {
+      return commands.join('\n');
+    } else {
       commands.forEach((command) => {
         currCommand = command;
         snowflake.execute({sqlText: command})
       });
-
-      result = 'Data resources created.';
-
-    } else {
-      result = commands.join('\n');
     }
 
-  } catch (err)  {
-    result =  `
+  } catch (err) {
+    return  `
       Procedure Failed. 
         Message: ${err.message}
 
-        currCommand: ${currCommand}
+        Last SQL Command: ${currCommand}
 
         Stack Trace:
         ${err.stack}
     `;
-    
-    return result;
   }
 
-  return result;
+  return 'Successfully created security objects';
 $$;
