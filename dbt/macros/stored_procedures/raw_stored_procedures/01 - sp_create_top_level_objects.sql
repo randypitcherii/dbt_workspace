@@ -1,4 +1,4 @@
-USE ROLE SYSADMIN;
+-- execute as sysadmin
 
 CREATE OR REPLACE PROCEDURE 
 RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_DATA_RESOURCES(
@@ -7,6 +7,7 @@ RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_DATA_RESOURCES(
 )
 RETURNS STRING
 LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
 AS
 $$
   try {
@@ -69,7 +70,9 @@ $$
     result =  `
       Procedure Failed. 
         Message: ${err.message}
+
         currCommand: ${currCommand}
+
         Stack Trace:
         ${err.stack}
     `;
