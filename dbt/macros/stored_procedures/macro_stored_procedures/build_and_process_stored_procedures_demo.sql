@@ -1,11 +1,13 @@
-{% macro build_and_process_stored_procedures_demo(project_name, dry_run=True) %}
+{% macro build_and_process_stored_procedures_demo(database, role, warehouse, dry_run=True) %}
     {% set sql %}
         -- schema
-        CREATE SCHEMA IF NOT EXISTS {{project_name}}.STORED_PROCEDURES;
-        CREATE SCHEMA IF NOT EXISTS {{project_name}}.STORED_PROCEDURES_MART;
+        USE ROLE {{role}};
+        USE WAREHOUSE {{warehouse}};
+        CREATE SCHEMA IF NOT EXISTS {{database}}.STORED_PROCEDURES;
+        CREATE SCHEMA IF NOT EXISTS {{database}}.STORED_PROCEDURES_MART;
 
         -- warehouse metering history
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
         AS (
         SELECT
             START_TIME,
@@ -21,7 +23,7 @@
         );
 
         -- snowpipe history
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.SNOWPIPES
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.SNOWPIPES
         AS (
         SELECT
             PIPE_ID,
@@ -44,7 +46,7 @@
         );
 
         -- snowpipe usage history
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
         AS (
         SELECT
             PIPE_ID,
@@ -60,7 +62,7 @@
         );
 
         -- query history
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.QUERY_HISTORY
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.QUERY_HISTORY
         AS (
         SELECT
             QUERY_ID,
@@ -121,7 +123,7 @@
         );
 
         -- Task versions
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.TASK_VERSIONS AS (
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.TASK_VERSIONS AS (
         SELECT
             ROOT_TASK_ID,
             GRAPH_VERSION,
@@ -150,7 +152,7 @@
         );
 
         -- Task history
-        CREATE TABLE IF NOT EXISTS {{project_name}}.STORED_PROCEDURES.TASK_HISTORY AS (
+        CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.TASK_HISTORY AS (
         SELECT
             NAME,
             QUERY_TEXT,
@@ -178,74 +180,74 @@
 
         -- Create a table to store warehouse metering history and grant ownership and select permissions.
         CREATE OR REPLACE TABLE 
-        {{project_name}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY AS (
+        {{database}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY AS (
             SELECT * 
-            FROM {{project_name}}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
+            FROM {{database}}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
         );
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY TO ROLE {{database}}_READ;
 
         -- Create a table to store snowpipes and grant ownership and select permissions.
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPES AS (
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPES AS (
             SELECT 
                 *, 
-                (SELECT MAX(INGESTION_TIME) FROM {{project_name}}.STORED_PROCEDURES.SNOWPIPES) AS LATEST_INGESTION_TIME, 
+                (SELECT MAX(INGESTION_TIME) FROM {{database}}.STORED_PROCEDURES.SNOWPIPES) AS LATEST_INGESTION_TIME, 
                 INGESTION_TIME = LATEST_INGESTION_TIME AS IS_LATEST 
-            FROM {{project_name}}.STORED_PROCEDURES.SNOWPIPES
+            FROM {{database}}.STORED_PROCEDURES.SNOWPIPES
         );
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPES TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPES TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPES TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPES TO ROLE {{database}}_READ;
 
         -- Create a table to store snowpipe usage history and grant ownership and select permissions.
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY AS (
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY AS (
             SELECT * 
-            FROM {{project_name}}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
+            FROM {{database}}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
         );
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWPIPE_USAGE_HISTORY TO ROLE {{database}}_READ;
 
         -- Create a table to store query history and grant ownership and select permissions.
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.QUERY_HISTORY AS (
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.QUERY_HISTORY AS (
             SELECT * 
-            FROM {{project_name}}.STORED_PROCEDURES.QUERY_HISTORY
+            FROM {{database}}.STORED_PROCEDURES.QUERY_HISTORY
         );
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.QUERY_HISTORY TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.QUERY_HISTORY TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.QUERY_HISTORY TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.QUERY_HISTORY TO ROLE {{database}}_READ;
 
         -- Create a table to store tasks and grant ownership and select permissions.
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.TASKS AS (
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.TASKS AS (
         SELECT 
             *, 
-            (SELECT MAX(INGESTION_TIME) FROM {{project_name}}.STORED_PROCEDURES.TASK_VERSIONS) AS LATEST_INGESTION_TIME, 
+            (SELECT MAX(INGESTION_TIME) FROM {{database}}.STORED_PROCEDURES.TASK_VERSIONS) AS LATEST_INGESTION_TIME, 
             INGESTION_TIME = LATEST_INGESTION_TIME AS IS_LATEST 
-        FROM {{project_name}}.STORED_PROCEDURES.TASK_VERSIONS
+        FROM {{database}}.STORED_PROCEDURES.TASK_VERSIONS
         );
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.TASKS TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.TASKS TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.TASKS TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.TASKS TO ROLE {{database}}_READ;
 
         -- Create a table to store task usage history and grant ownership and select permissions. 
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY AS ( 
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY AS ( 
             SELECT * 
-            FROM {{project_name}}.STORED_PROCEDURES.TASK_HISTORY 
+            FROM {{database}}.STORED_PROCEDURES.TASK_HISTORY 
         ); 
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS;
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY TO ROLE {{project_name}}_READ; 
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY TO ROLE {{database}}_WRITE COPY CURRENT GRANTS;
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.TASK_USAGE_HISTORY TO ROLE {{database}}_READ; 
 
         --Create a table to store snowflake compute costs and grant ownership and select permissions. 
-        CREATE OR REPLACE TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST AS ( 
+        CREATE OR REPLACE TABLE {{database}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST AS ( 
         SELECT 
             SUM(CREDITS_USED) * 3.00 AS COST, 
             START_TIME::DATE AS START_DATE 
-        FROM {{project_name}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY 
+        FROM {{database}}.STORED_PROCEDURES_MART.WAREHOUSE_METERING_HISTORY 
         GROUP BY START_DATE
         ); 
-        GRANT OWNERSHIP ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{project_name}}_WRITE COPY CURRENT GRANTS; 
-        GRANT SELECT ON TABLE {{project_name}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{project_name}}_READ;
+        GRANT OWNERSHIP ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{database}}_WRITE COPY CURRENT GRANTS; 
+        GRANT SELECT ON TABLE {{database}}.STORED_PROCEDURES_MART.SNOWFLAKE_COST TO ROLE {{database}}_READ;
     {% endset %}
 
 
     {% if dry_run %}
-        {% do log(sql, True) %}
+        {% do log(sql, False) %}
     {% else %}
         {% do run_query(sql) %}
     {% endif %}
