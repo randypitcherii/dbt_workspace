@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: snowflake_account_usage
+    database: snowflake
+    schema: account_usage
+
+    tags: ['stored_procedures']
+
+    tables:
+      - name: warehouse_metering_history
+      - name: pipes
+      - name: pipe_usage_history
+      - name: query_history
+      - name: task_veresions
+      - name: task_history
