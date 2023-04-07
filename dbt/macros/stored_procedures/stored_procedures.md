@@ -9,6 +9,7 @@ The following problems are associated with data pipelines that rely on stored pr
 - too many hard-coded references. Difficult to ensure dev/ci/prod environment isolation.
 - absolutely no data quality testing
 - often little or no version control history. How old is this code? Does it still work? Who owns it? Why do we do this???
+- limitations in stored procedures (can't switch roles, must understand caller/owner rights)
 
 Converting to dbt means:
 - Less code
@@ -59,3 +60,9 @@ Split your stored procedures into 3 major categories:
 - Whenever possible, use built-in dbt support for common housekeeping tasks
 - Leverage hooks (before/after total build or before/after individual object build)
 - most housekeeping can be reduced through the use of jinja. Don't Repeat Yourself = DRY code
+
+# Outcomes (metrics)
+- Lines of code
+- Runtime
+- Simplicity of changes
+- Simplicity of troubleshooting

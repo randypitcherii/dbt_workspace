@@ -441,9 +441,15 @@ $$
 
 
   } catch (err)  {
-    var result =  "Failed: Code: " + err.code + "\n  State: " + err.state;
-    result += "\n  Message: " + err.message;
-    result += "\nStack Trace:\n" + err.stackTraceTxt; 
+    var result =  `
+      Procedure Failed. 
+        Code: ${err.code}
+        State: ${err.state}
+        Message: ${err.message}
+        Stack Trace:
+        ${err.stack}
+    `;
+    
     return result;
   }
 
