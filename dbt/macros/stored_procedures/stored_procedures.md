@@ -1,5 +1,4 @@
-
-# Problems
+# Problems with Stored Procedures
 - inconsistent style from SP to SP
 - manual ordering
 - no concurrency without advanced effort
@@ -10,7 +9,12 @@
 - absolutely no data quality testing
 - often little or no version control history. How old is this code? Does it still work? Who owns it? Why do we do this???
 
-# Approach
+# Lift and Shift Approach
+- move your stored procedures into dbt macros. Just copy and paste.
+- use `dbt run-operation your_macro_name` to execute your procedures as you typically would
+- you can iterate on this by using dbt variables, more jinja, job orchestration + monitoring, and truly useful logging.
+
+# Modernization Approach
 Split your stored procedures into 3 major categories:
 - DDL - Object creation (Top Level vs Nested)
 - DML - Data Processing (Initial Load vs Incremental)
