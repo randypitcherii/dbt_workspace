@@ -361,10 +361,10 @@ $$
   `});
       
 
-  // Tasks history
+  // Task versions
   const taskCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASKS;
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS;
   `});
   taskCursorResultSet.next(); // prepare result set to retrieve next value
   const taskCursorValue = taskCursorResultSet.getColumnValueAsString(1);
@@ -404,7 +404,7 @@ $$
   // Task usage history
   const taskUsageCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_USAGE_HISTORY;
+    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY;
   `});
   taskUsageCursorResultSet.next(); // prepare result set to retrieve next value
   const taskUsageCursorValue = taskUsageCursorResultSet.getColumnValueAsString(1);
