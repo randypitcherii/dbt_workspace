@@ -1,6 +1,7 @@
-# Problems with Stored Procedures
-- inconsistent style from SP to SP
-- manual ordering
+# Why?
+The following problems are associated with data pipelines that rely on stored procedures:
+- inconsistent style from procdure to procedure
+- manual ordering of operations within and across stored procedures
 - no concurrency without advanced effort
 - painful to change or update. You must understand the whole pipeline to safely make a change
 - difficult to debug (errors in SP03 may be the result of code in SP01)
@@ -9,12 +10,35 @@
 - absolutely no data quality testing
 - often little or no version control history. How old is this code? Does it still work? Who owns it? Why do we do this???
 
-# Lift and Shift Approach
+Converting to dbt means:
+- Less code
+- Less complexity
+- Less duplicate (or near duplicate) builds 
+- More modularity
+- More reusability
+- More consistency
+- More visibility
+- Fewer mistakes
+- Faster development
+- Reliable deployments
+- all while adding auto lineage, documentation, and data quality monitoring.
+- Massive open source community (pool of hiring talent, most common problems have readily-available and proven solutions, high quality training and support options)
+- more enjoyable development (this is subjective - if you disagree with this please reach out. I propose that no person fluent with dbt prefers writing stored procedures.)
+
+This results in:
+- Cheaper development (lower learning curve, faster onboarding, less rework, more people are fit to contribute, no need to hire all advanced warehouse users)
+- Cheaper builds (consistency, concurrency, efficiency all lead to shorter runtimes)
+- Reduced risk (timeline risk, data quality risk, developer adoption risk, consumer adoption risk)
+- Reduced opportunity costs (what is the value of the analytics you don't have time for today?)
+- Hedge against vendor lockin (dbt is open source and works with the top cloud data warehouses)
+- Employee retention + easier, mroe reliable hiring
+
+# How - Option 1: Lift and Shift Approach
 - move your stored procedures into dbt macros. Just copy and paste.
 - use `dbt run-operation your_macro_name` to execute your procedures as you typically would
 - you can iterate on this by using dbt variables, more jinja, job orchestration + monitoring, and truly useful logging.
 
-# Modernization Approach
+# How - Option 2: Modernization Approach
 Split your stored procedures into 3 major categories:
 - DDL - Object creation (Top Level vs Nested)
 - DML - Data Processing (Initial Load vs Incremental)
