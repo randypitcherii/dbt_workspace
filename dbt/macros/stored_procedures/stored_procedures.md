@@ -48,6 +48,7 @@ Split your stored procedures into 3 major categories:
 - Top level object DDL become dbt Macros
 - Tabular Nested objects (schemas, tables, views - aka relations) DDL is natively built by dbt
 - Non-tabular nested objects (stages, stored procedures, user-defined functions, tasks) DDL become dbt Macros initially but better to use custom materializations (either from you or from a dbt Package).
+- NOTE: `create table as` aka CTAS (sea-tazz) and similar syntax will be treated as DML here, so handle those in the DML section. 
 
 ## DML
 - All DML becomes sql select statements as dbt Models
