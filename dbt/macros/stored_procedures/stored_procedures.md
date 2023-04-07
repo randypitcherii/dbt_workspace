@@ -8,6 +8,7 @@
 - failures block every subsequent command. 
 - too many hard-coded references. Difficult to ensure dev/ci/prod environment isolation.
 - absolutely no data quality testing
+- often little or no version control history. How old is this code? Does it still work? Who owns it? Why do we do this???
 
 # Approach
 Split your stored procedures into 3 major categories:
