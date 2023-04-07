@@ -5,21 +5,24 @@
 -- This process includes cursor-based CDC and snapshotting functionality to 
 -- ensure that only new data is inserted into the tables. 
 -- ==========================================================================
-CREATE OR REPLACE 
-PROCEDURE RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.PROCESS_SNOWFLAKE_USAGE_DATA()
+CREATE OR REPLACE PROCEDURE 
+RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.PROCESS_SNOWFLAKE_USAGE_DATA(
+    DATABASE STRING
+)
 RETURNS STRING
 LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
 AS
 $$
-  try { // try/catch it all
+  try { 
   //=========================================================================
   // initial setup
   //=========================================================================
   // schema
-  snowflake.execute({sqlText: "CREATE SCHEMA IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS;"});
+  snowflake.execute({sqlText: `CREATE SCHEMA IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES;`});
 
   // warehouse metering history
-  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY
+  snowflake.execute({sqlText: `CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
     AS (
       SELECT
         START_TIME,
@@ -36,7 +39,7 @@ $$
 
   // snowpipe history
   snowflake.execute({sqlText: `
-    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
+    CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.SNOWPIPES
     AS (
       SELECT
         PIPE_ID,
@@ -61,7 +64,7 @@ $$
 
   // snowpipe usage history
   snowflake.execute({sqlText: `
-    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
+    CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
     AS (
       SELECT
         PIPE_ID,
@@ -79,7 +82,7 @@ $$
 
   // query history
   snowflake.execute({sqlText: `
-    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
+    CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.QUERY_HISTORY
     AS (
       SELECT
         QUERY_ID,
@@ -142,7 +145,7 @@ $$
 
   // Task versions
   snowflake.execute({sqlText: `
-    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS AS (
+    CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.TASK_VERSIONS AS (
       SELECT
         ROOT_TASK_ID,
         GRAPH_VERSION,
@@ -173,7 +176,7 @@ $$
 
   // Task history
   snowflake.execute({sqlText: `
-    CREATE TABLE IF NOT EXISTS RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY AS (
+    CREATE TABLE IF NOT EXISTS ${DATABASE}.STORED_PROCEDURES.TASK_HISTORY AS (
       SELECT
         NAME,
         QUERY_TEXT,
@@ -208,13 +211,13 @@ $$
   // warehouse metering history
   const warehouseCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(START_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY;
+    FROM ${DATABASE}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY;
   `});
   warehouseCursorResultSet.next(); // prepare result set to retrieve next value
   const warehouseCursorValue = warehouseCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.WAREHOUSE_METERING_HISTORY
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
     SELECT
       START_TIME,
       END_TIME,
@@ -234,13 +237,13 @@ $$
   // snowpipe history
   const snowpipeCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(CREATED), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES;
+    FROM ${DATABASE}.STORED_PROCEDURES.SNOWPIPES;
   `});
   snowpipeCursorResultSet.next(); // prepare result set to retrieve next value
   const snowpipeCursorValue = snowpipeCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPES
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.SNOWPIPES
     SELECT
       PIPE_ID,
       PIPE_NAME,
@@ -267,13 +270,13 @@ $$
   // snowpipe usage history
   const pipeUsageCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY;
+    FROM ${DATABASE}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY;
   `});
   pipeUsageCursorResultSet.next(); // prepare result set to retrieve next value
   const pipeUsageCursorValue = pipeUsageCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.SNOWPIPE_USAGE_HISTORY
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.SNOWPIPE_USAGE_HISTORY
     SELECT
       PIPE_ID,
       PIPE_NAME,
@@ -293,13 +296,13 @@ $$
   // query history
   const queryHistoryCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(END_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY;
+    FROM ${DATABASE}.STORED_PROCEDURES.QUERY_HISTORY;
   `});
   queryHistoryCursorResultSet.next(); // prepare result set to retrieve next value
   const queryHistoryCursorValue = queryHistoryCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.QUERY_HISTORY
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.QUERY_HISTORY
     SELECT
       QUERY_ID,
       QUERY_TEXT,
@@ -364,13 +367,13 @@ $$
   // Task versions
   const taskCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS;
+    FROM ${DATABASE}.STORED_PROCEDURES.TASK_VERSIONS;
   `});
   taskCursorResultSet.next(); // prepare result set to retrieve next value
   const taskCursorValue = taskCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_VERSIONS
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.TASK_VERSIONS
     SELECT
       ROOT_TASK_ID,
       GRAPH_VERSION,
@@ -404,13 +407,13 @@ $$
   // Task usage history
   const taskUsageCursorResultSet = snowflake.execute({sqlText: `
     SELECT COALESCE(MAX(INGESTION_TIME), '1970-01-01'::TIMESTAMP_LTZ) AS CURSOR 
-    FROM RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY;
+    FROM ${DATABASE}.STORED_PROCEDURES.TASK_HISTORY;
   `});
   taskUsageCursorResultSet.next(); // prepare result set to retrieve next value
   const taskUsageCursorValue = taskUsageCursorResultSet.getColumnValueAsString(1);
 
   snowflake.execute({sqlText: `
-    INSERT INTO RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCS.TASK_HISTORY
+    INSERT INTO ${DATABASE}.STORED_PROCEDURES.TASK_HISTORY
     SELECT
       NAME,
       QUERY_TEXT,
@@ -443,8 +446,6 @@ $$
   } catch (err)  {
     var result =  `
       Procedure Failed. 
-        Code: ${err.code}
-        State: ${err.state}
         Message: ${err.message}
         Stack Trace:
         ${err.stack}
@@ -453,5 +454,5 @@ $$
     return result;
   }
 
-  return "Success";
+  return "Successfully built and processed snowflake usage data";
 $$;
