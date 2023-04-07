@@ -1,4 +1,4 @@
--- execute as sysadmin
+-- call this procedure as sysadmin
 
 CREATE OR REPLACE PROCEDURE 
 RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_TOP_LEVEL_OBJECTS(

@@ -1,4 +1,4 @@
--- call this sp as securityadmin
+-- call this procedure as securityadmin
 
 CREATE OR REPLACE PROCEDURE 
 RANDY_PITCHER_WORKSPACE_DEV.STORED_PROCEDURES.CREATE_SECURITY_OBJECTS(
@@ -196,7 +196,7 @@ $$
         Stack Trace:
         ${err.stack}
     `;
-    
-    return 'Successfully created security objects';
   }
+    
+  return 'Successfully created security objects';
 $$;

@@ -76,7 +76,7 @@ $$
         Stack Trace:
         ${err.stack}
     `;
-    
-    return 'Successfully dropped security objects.';
   }
+    
+  return 'Successfully dropped security objects.';
 $$;

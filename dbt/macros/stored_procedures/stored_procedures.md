@@ -1,6 +1,7 @@
 # Why?
 The following problems are associated with data pipelines that rely on stored procedures:
-- inconsistent style from procdure to procedure
+- calling stored procedures require an active warehouse, even for administrative tasks that should not use warehouse credits.
+- inconsistent style from procedure to procedure
 - manual ordering of operations within and across stored procedures
 - no concurrency without advanced effort
 - painful to change or update. You must understand the whole pipeline to safely make a change
