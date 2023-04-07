@@ -262,4 +262,5 @@ USE ROLE SECURITYADMIN;
 {% endset %}
 
 {% do log('\n\n' ~ setup_script ~ '\n\n', True) %}
+{{ return(setup_script) }}
 {% endmacro %}
