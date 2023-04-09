@@ -1,4 +1,4 @@
-SELECT 
+select 
     * 
     
-FROM {{ ref('stg_warehouse_metering_history') }}
+from {{ ref('stg_warehouse_metering_history') }}

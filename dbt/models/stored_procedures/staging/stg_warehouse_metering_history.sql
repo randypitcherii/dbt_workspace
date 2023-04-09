@@ -1,11 +1,11 @@
-SELECT
-    START_TIME,
-    END_TIME,
-    WAREHOUSE_ID,
-    WAREHOUSE_NAME,
-    CREDITS_USED,
-    CREDITS_USED_COMPUTE,
-    CREDITS_USED_CLOUD_SERVICES,
-    CURRENT_TIMESTAMP AS INGESTION_TIME
+select
+    start_time,
+    end_time,
+    warehouse_id,
+    warehouse_name,
+    credits_used,
+    credits_used_compute,
+    credits_used_cloud_services,
+    current_timestamp as ingestion_time
     
-FROM {{ source('snowflake_account_usage', 'warehouse_metering_history') }}
+from {{ source('snowflake_account_usage', 'warehouse_metering_history') }}
