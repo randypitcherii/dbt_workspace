@@ -11,6 +11,7 @@ The following problems are associated with data pipelines that rely on stored pr
 - absolutely no data quality testing
 - often little or no version control history. How old is this code? Does it still work? Who owns it? Why do we do this???
 - limitations in stored procedures (can't switch roles, must understand caller/owner rights)
+- Audit: Snowflake query history shows when you call a stored procedure, but not the contents of that procedure. This is a challenge, especially over time to see who ran what, when. 
 
 Converting to dbt means:
 - Less code
