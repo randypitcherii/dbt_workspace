@@ -14,3 +14,6 @@ sources:
       - name: query_history
       - name: task_versions
       - name: task_history
+
+      - name: users
+      - name: table_storage_metrics
