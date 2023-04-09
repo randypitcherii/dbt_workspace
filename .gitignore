@@ -4,3 +4,4 @@ dbt_packages/
 logs/
 venv
 .vscode/
+.DS_Store

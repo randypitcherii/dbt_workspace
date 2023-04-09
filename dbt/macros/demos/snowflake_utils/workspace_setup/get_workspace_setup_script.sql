@@ -47,17 +47,17 @@ CREATE WAREHOUSE {{ project_name }}_DEV_WH
 
 // test warehouse
 CREATE WAREHOUSE {{ project_name }}_TEST_WH
-    COMMENT='Warehouse for powering test activities for the {{ project_name }} project'
-    WAREHOUSE_SIZE=XSMALL
-    AUTO_SUSPEND=60
-    INITIALLY_SUSPENDED=TRUE;
+  COMMENT='Warehouse for powering test activities for the {{ project_name }} project'
+  WAREHOUSE_SIZE=XSMALL
+  AUTO_SUSPEND=60
+  INITIALLY_SUSPENDED=TRUE;
 
 // prod warehouse
 CREATE WAREHOUSE {{ project_name }}_PROD_WH
-    COMMENT='Warehouse for powering production activities for the {{ project_name }} project'
-    WAREHOUSE_SIZE=XSMALL
-    AUTO_SUSPEND=60
-    INITIALLY_SUSPENDED=TRUE;
+  COMMENT='Warehouse for powering production activities for the {{ project_name }} project'
+  WAREHOUSE_SIZE=XSMALL
+  AUTO_SUSPEND=60
+  INITIALLY_SUSPENDED=TRUE;
 //=============================================================================
 
 
@@ -262,4 +262,5 @@ USE ROLE SECURITYADMIN;
 {% endset %}
 
 {% do log('\n\n' ~ setup_script ~ '\n\n', True) %}
+{{ return(setup_script) }}
 {% endmacro %}

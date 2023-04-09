@@ -11,9 +11,21 @@ models:
     +schema: secret
     +post-hook: "{{validate_model_name(model)}}"
 
+
     demos:
       enforce_limit:
         +post-hook: "{{validate_sql_contains_limit(model)}}"
+
+
+    stored_procedures:
+      +tags: ['stored_procedures']
+      +materialized: table
+      +schema: stored_procedures_to_dbt_models
+
+      mart:
+        +grants:
+          select:    "{{target.database}}_read"
+          ownership: "{{target.database}}_write"
 
 seeds:
   secret:
