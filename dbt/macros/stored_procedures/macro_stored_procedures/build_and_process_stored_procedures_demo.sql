@@ -10,7 +10,7 @@
         CREATE TABLE IF NOT EXISTS {{database}}.STORED_PROCEDURES.WAREHOUSE_METERING_HISTORY
         AS (
         SELECT
-            START_TIME,
+            START_TIME as begin_at,
             END_TIME,
             WAREHOUSE_ID,
             WAREHOUSE_NAME,
